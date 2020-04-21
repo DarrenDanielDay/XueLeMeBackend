@@ -1,0 +1,25 @@
+﻿@model XueLeMeBackend.Services.ServiceMessage
+
+@{
+    ViewData["Title"] = "ServiceResult";
+}
+
+
+<div>
+    <h4>服务信息</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.State)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.State)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Detail)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Detail)
+        </dd>
+    </dl>
+</div>
