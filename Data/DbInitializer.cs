@@ -10,6 +10,8 @@ namespace XueLeMeBackend.Data
     {
         public static void Init(XueLeMeContext context)
         {
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
             var mail = "614434935@qq.com";
             var user = new User
             {

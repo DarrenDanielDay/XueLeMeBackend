@@ -12,8 +12,6 @@ namespace XueLeMeBackend.Data
     {
         public XueLeMeContext(DbContextOptions<XueLeMeContext> contextOptions) : base(contextOptions)
         {
-            Database.EnsureDeleted();
-            Database.EnsureCreated();
             DbInitializer.Init(this);
         }
         public DbSet<Authentication> Authentications { get; set; }
