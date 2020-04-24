@@ -40,6 +40,7 @@ namespace XueLeMeBackend.Data
                 AuthToken = mail2,
                 CreatedTime = DateTime.Now
             };
+            user.Authentications.Add(auth2);
             context.Users.Add(user2);
             context.SaveChanges();
         }
