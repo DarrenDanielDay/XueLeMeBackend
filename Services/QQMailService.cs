@@ -19,9 +19,10 @@ namespace XueLeMeBackend.Services
 
         public async Task<ServiceResult<bool>> SendMail(string to, string title, string content)
         {
-            if ((await IsValidMailAddress(to)).State != ServiceResultEnum.Valid)
+            var valid = await IsValidMailAddress(to);
+            if (valid.State != ServiceResultEnum.Valid)
             {
-                return Invalid(false, "邮箱格式错误");
+                return Invalid(false, valid.Detail);
             }
             MailMessage message = new MailMessage(from: SenderAddress, to: new MailAddress(to));
             message.Subject = title;
@@ -35,9 +36,9 @@ namespace XueLeMeBackend.Services
                 }
                 catch (Exception e)
                 {
-                    return Fail(false, e.Message);
+                    return Fail(false,"邮件发送失败"+ e.Message);
                 }
-                return Success(true, "发送成功");
+                return Success(true, "邮件发送成功");
             });
         }
     }

@@ -26,14 +26,21 @@ namespace XueLeMeBackend.Data
                 CreatedTime = DateTime.Now
             };
             context.Users.Add(user);
-            context.Authentications.Add(auth);
-            var request = new ResetPasswordRequest
+
+            var mail2 = "jamesnm2015@163.com";
+            var user2 = new User
             {
-                EmailAddress = mail,
-                CreatedTime = DateTime.Now,
-                Token = "a"
+                Authentications = new List<Authentication>()
             };
-            context.ResetPasswordRequests.Add(request);
+            var auth2 = new Authentication
+            {
+                Type = Authentication.AuthTypeEnum.MailAddress,
+                User = user2,
+                UserToken = "123456",
+                AuthToken = mail2,
+                CreatedTime = DateTime.Now
+            };
+            context.Users.Add(user2);
             context.SaveChanges();
         }
     }

@@ -65,7 +65,7 @@ namespace XueLeMeBackend.Services
                     }
                     else
                     {
-                        return Exist(existfile,"文件已存在");
+                        return Exist(existfile,"相同文件已存在");
                     }
                 }
             }

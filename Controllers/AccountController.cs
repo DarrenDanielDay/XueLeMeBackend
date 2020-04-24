@@ -25,22 +25,22 @@ namespace XueLeMeBackend.Controllers
 
         [HttpPost]
         [Route("MailAuth/Register")]
-        public async Task<IActionResult> Register([FromBody] MailRegisterForm mailRegisterForm)
+        public async Task<ServiceResult<object>> Register([FromBody] MailRegisterForm mailRegisterForm)
         {
             var result = await MailAccountService.RegisterByMailAndPassword(mailRegisterForm.MailAddress, mailRegisterForm.Password);
             if (result.State == ServiceResultEnum.Success)
             {
-                return Json(Success(result.Detail));
+                return Success(result.Detail);
             }
             else
             {
-                return Json(Result(result.State, result.Detail));
+                return Result(result.State, result.Detail);
             }
         }
 
         [HttpGet]
         [Route("MailAuth/Confirm/{token}")]
-        public async Task<IActionResult> ConfirmRegister(string token)
+        public async Task<ViewResult> ConfirmRegister(string token)
         {
             var result = await MailAccountService.AuthMailAddress(token);
             return View(nameof(ServiceMessage), result);
@@ -48,15 +48,15 @@ namespace XueLeMeBackend.Controllers
 
         [HttpPost]
         [Route("MailAuth/Login")]
-        public async Task<IActionResult> Login([FromBody] MailLoginForm mailLoginForm)
+        public async Task<ServiceResult<bool>> Login([FromBody] MailLoginForm mailLoginForm)
         {
             var result = await MailAccountService.VerifyMailPassword(mailLoginForm.MailAddress, mailLoginForm.Password);
-            return Json(result);
+            return result;
         }
 
         [HttpGet]
         [Route("MailAuth/ResetPassword/{token}")]
-        public async Task<IActionResult> ResetPassword(string token)
+        public async Task<ViewResult> ResetPassword(string token)
         {
             var result = await MailAccountService.ResetPasswordRequestExist(token);
             if (result.ExtraData == null)
@@ -72,14 +72,14 @@ namespace XueLeMeBackend.Controllers
 
         [HttpPost]
         [Route("MailAuth/ForgetPassword")]
-        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordForm form)
+        public async Task<ServiceResult<object>> ForgetPassword([FromBody] ForgetPasswordForm form)
         {
-            return Json(await MailAccountService.RequireResetPasswordByMail(form.MailAddress));
+            return await MailAccountService.RequireResetPasswordByMail(form.MailAddress);
         }
 
         [HttpPost]
         [Route("MailAuth/ResetPassword/{token}")]
-        public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordForm form)
+        public async Task<ViewResult> ResetPassword([FromForm] ResetPasswordForm form)
         {
             if (!MyForm.ReflectCheck(form))
             {

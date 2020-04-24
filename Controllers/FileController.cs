@@ -39,10 +39,10 @@ namespace XueLeMeBackend.Controllers
         }
 
         [HttpGet]
-        [Route("Files/{filename}")]
-        public async Task<IActionResult> GetFile(string filename)
+        [Route("Files/{md5}")]
+        public async Task<IActionResult> GetFile(string md5)
         {
-            var result = await FileService.GetFile(filename);
+            var result = await FileService.GetFile(md5);
             if (result.State == ServiceResultEnum.NotFound)
             {
                 return NotFound();
