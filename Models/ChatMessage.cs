@@ -13,7 +13,7 @@ namespace XueLeMeBackend.Models
             Image
         }
         public int Id { get; set; }
-        public string Data { get; set; }
+        public string MessageOrImageKey { get; set; }
         public MessageTypeEnum Type { get; set; }
     }
 }

@@ -39,6 +39,7 @@ namespace XueLeMeBackend
 
             services.AddSingleton<IMailService, QQMailService>();
             services.AddSingleton<MD5Service>();
+            services.AddSingleton<IFileService, DbFileService>();
 
             services.AddSingleton<ISecurityService, MD5SecurityService>();
             services.AddSingleton<IMailAccountService, MailAccountService>();
