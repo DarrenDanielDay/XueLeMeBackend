@@ -10,9 +10,10 @@ namespace XueLeMeBackend.Data
 {
     public class XueLeMeContext: DbContext
     {
-        public XueLeMeContext(DbContextOptions<XueLeMeContext> contextOptions) : base(contextOptions)
+        public XueLeMeContext(DbContextOptions<XueLeMeContext> contextOptions, DbInitializer initializer) : base(contextOptions)
         {
-            DbInitializer.Init(this);
+            Initializer = initializer;
+            initializer.Init(this);
         }
         public DbSet<Authentication> Authentications { get; set; }
         public DbSet<ChatGroup> ChatGroups { get; set; }
@@ -30,6 +31,6 @@ namespace XueLeMeBackend.Data
         public DbSet<ResetPasswordRequest> ResetPasswordRequests { get; set; }
         public DbSet<MailRegisterRequest> MailRegisterRequests { get; set; }
         public DbSet<BinaryFile> BinaryFiles { get; set; }
-
+        public DbInitializer Initializer { get; }
     }
 }

@@ -47,7 +47,9 @@ namespace XueLeMeBackend.Controllers
             {
                 return NotFound();
             }
-            return File(result.ExtraData.Bytes, result.ExtraData.ContentType, result.ExtraData.FileName);
+            return File(result.ExtraData.Bytes, result.ExtraData.ContentType
+                , result.ExtraData.FileName
+                );
         }
     }
 }

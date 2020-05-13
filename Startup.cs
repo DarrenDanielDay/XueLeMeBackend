@@ -30,19 +30,20 @@ namespace XueLeMeBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<DbInitializer>();
             services.AddDbContext<XueLeMeContext>(
                 o => o.UseMySql(
                     Configuration.GetConnectionString("MySQLConnectString"),
                     mysqlopt => mysqlopt.ServerVersion(new Version(8, 0, 3), ServerType.MySql)
                 ),
-                ServiceLifetime.Singleton);
+                ServiceLifetime.Scoped);
 
             services.AddSingleton<IMailService, QQMailService>();
             services.AddSingleton<MD5Service>();
-            services.AddSingleton<IFileService, DbFileService>();
+            services.AddScoped<IFileService, DbFileService>();
 
             services.AddSingleton<ISecurityService, MD5SecurityService>();
-            services.AddSingleton<IMailAccountService, MailAccountService>();
+            services.AddScoped<IMailAccountService, MailAccountService>();
 
             services.AddControllers();
             services.AddSwaggerDocument();
@@ -56,7 +57,8 @@ namespace XueLeMeBackend
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
 

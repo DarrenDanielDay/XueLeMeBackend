@@ -14,7 +14,7 @@ def file_replacer(filename, replace_rules):
         f.write(src)
 
 def main():
-    file_replacer(appsettings, [('port=3333', 'port=3306'),('localhost:5000','darrendanielday.club')])
+    file_replacer(appsettings, [('port=3333', 'port=3306'),('localhost:5000','darrendanielday.club'), ('"IsServer": false','"IsServer": true')])
     # file_replacer(dbinit, [('context.Database.EnsureDeleted();','')])
     file_replacer(startup,[('Version(8, 0, 3)','Version(5, 7, 29)')] )
     # file_replacer(context,[('DbInitializer.Init(this);','')])

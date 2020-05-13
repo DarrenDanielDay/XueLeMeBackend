@@ -123,6 +123,10 @@ namespace XueLeMeBackend.Services
             {
                 return Result(exist.State, exist.Detail);
             }
+            var request = await Context.ResetPasswordRequests.FirstOrDefaultAsync(r => r.EmailAddress == mail);
+            if (request != null) {
+                Context.ResetPasswordRequests.Remove(request);
+            }
             string randomtoken = SecurityService.RandomLongString();
             Context.ResetPasswordRequests.Add(new ResetPasswordRequest { CreatedTime = DateTime.Now, EmailAddress = mail, Token = randomtoken });
             await Context.SaveChangesAsync();
