@@ -8,6 +8,7 @@ using XueLeMeBackend.Data;
 using XueLeMeBackend.Models;
 using XueLeMeBackend.Models.Forms;
 using XueLeMeBackend.Services;
+using XueLeMeBackend.Models.QueryJsons;
 using static XueLeMeBackend.Services.ServiceMessage;
 
 namespace XueLeMeBackend.Controllers
@@ -16,12 +17,14 @@ namespace XueLeMeBackend.Controllers
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
-        public AccountController(IMailAccountService mailAccountService)
+        public AccountController(IMailAccountService mailAccountService, IAccountService accountService)
         {
             MailAccountService = mailAccountService;
+            AccountService = accountService;
         }
 
         public IMailAccountService MailAccountService { get; }
+        public IAccountService AccountService { get; }
 
         [HttpPost]
         [Route("MailAuth/Register")]
@@ -97,6 +100,23 @@ namespace XueLeMeBackend.Controllers
             return View(ServiceResultViewName, Success());
         }
 
+        [HttpGet]
+        [Route("Detail/{userid}")]
+        public async Task<ServiceResult<UserDetail>> Detail(int userid)
+        {
+            var user = await AccountService.UserFromId(userid);
+            if (user.State != ServiceResultEnum.Exist)
+            {
+                return Result<UserDetail>(user.State, null, user.Detail);
+            }
+            return Exist(new UserDetail { Avatar = user.ExtraData.Avatar.MD5, Id = user.ExtraData.Id, Nickname = user.ExtraData.Nickname });
+        }
 
+        [HttpPost]
+        [Route("ChangeNickname")]
+        public async Task<ServiceResult<object>> ChangeNickname([FromBody] ChangeNicknameForm changeNicknameForm)
+        {
+            return await AccountService.ChangeNickname(changeNicknameForm.UserId, changeNicknameForm.Nickname);
+        }
     }
 }

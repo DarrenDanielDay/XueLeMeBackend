@@ -15,6 +15,7 @@ using Pomelo.EntityFrameworkCore.MySql;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using XueLeMeBackend.Data;
 using XueLeMeBackend.Services;
+using XueLeMeBackend.Hubs;
 
 namespace XueLeMeBackend
 {
@@ -30,7 +31,10 @@ namespace XueLeMeBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
             services.AddSingleton<DbInitializer>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IGroupService, GroupService>();
             services.AddDbContext<XueLeMeContext>(
                 o => o.UseMySql(
                     Configuration.GetConnectionString("MySQLConnectString"),
@@ -57,17 +61,17 @@ namespace XueLeMeBackend
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
-
             app.UseOpenApi();
             app.UseSwaggerUi3();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/api/ChatRoom");
             });
         }
     }

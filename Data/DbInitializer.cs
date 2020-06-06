@@ -29,11 +29,23 @@ namespace XueLeMeBackend.Data
         }
         public void DoInit(XueLeMeContext context)
         {
-            if (!Configuration.GetValue<bool>("IsServer")) {
+            if (!Configuration.GetValue<bool>("IsServer"))
+            {
                 context.Database.EnsureDeleted();
             }
             context.Database.EnsureCreated();
-            var mail = "614434935@qq.com";
+            var user1 = CreateUser(context, "614434935@qq.com", "password");
+            var user2 = CreateUser(context, "jamesnm2015@163.com", "123456");
+            var user3 = CreateUser(context, "1215196803@qq.com", "123455");
+            var group1 = CreateGroup(context, "group1", user1);
+            var group2 = CreateGroup(context, "group2", user1);
+            JoinGroup(context, user2, group1);
+            JoinGroup(context, user3, group2);
+            context.SaveChanges();
+        }
+
+        private User CreateUser(XueLeMeContext context, string mailAdress, string password)
+        {
             var user = new User
             {
                 Authentications = new List<Authentication>(),
@@ -41,29 +53,38 @@ namespace XueLeMeBackend.Data
             var auth = new Authentication
             {
                 Type = Authentication.AuthTypeEnum.MailAddress,
+                AuthToken = mailAdress,
                 User = user,
-                UserToken = "password",
-                AuthToken = mail,
-                CreatedTime = DateTime.Now
+                CreatedTime = DateTime.Now,
+                UserToken = password
             };
             user.Authentications.Add(auth);
-            context.Users.Add(user);
-
-            var mail2 = "jamesnm2015@163.com";
-            var user2 = new User
+            context.Add(user);
+            context.SaveChanges();
+            return user;
+        }
+        private ChatGroup CreateGroup(XueLeMeContext context, string name, User owner)
+        {
+            ChatGroup group = new ChatGroup
             {
-                Authentications = new List<Authentication>()
+                Creator = owner,
+                GroupName = name,
+                Memberships = new List<GroupMembership> {  }
             };
-            var auth2 = new Authentication
+            GroupMembership membership = new GroupMembership { User = owner, ChatGroup = group };
+            group.Memberships.Add(membership);
+            context.ChatGroups.Add(group);
+            context.SaveChanges();
+            return group;
+        }
+        private void JoinGroup(XueLeMeContext context, User user, ChatGroup group)
+        {
+            GroupMembership membership = new GroupMembership
             {
-                Type = Authentication.AuthTypeEnum.MailAddress,
-                User = user2,
-                UserToken = "123456",
-                AuthToken = mail2,
-                CreatedTime = DateTime.Now
+                User = user,
+                ChatGroup = group,
             };
-            user2.Authentications.Add(auth2);
-            context.Users.Add(user2);
+            context.GroupMemberships.Add(membership);
             context.SaveChanges();
         }
     }

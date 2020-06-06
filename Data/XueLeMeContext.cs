@@ -30,7 +30,10 @@ namespace XueLeMeBackend.Data
         public DbSet<Zone> Zones { get; set; }
         public DbSet<ResetPasswordRequest> ResetPasswordRequests { get; set; }
         public DbSet<MailRegisterRequest> MailRegisterRequests { get; set; }
+        public DbSet<JoinGroupRequest> JoinGroupRequests { get; set; }
         public DbSet<BinaryFile> BinaryFiles { get; set; }
+        public DbSet<GroupMembership> GroupMemberships { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         public DbInitializer Initializer { get; }
     }
 }

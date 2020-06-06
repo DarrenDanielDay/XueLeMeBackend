@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using XueLeMeBackend.Data;
 using XueLeMeBackend.Services;
 using static XueLeMeBackend.Services.ServiceMessage;
 
@@ -20,13 +21,15 @@ namespace XueLeMeBackend.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IMailService mainService)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IMailService mainService, XueLeMeContext context)
         {
             _logger = logger;
             MainService = mainService;
+            Context = context;
         }
 
         public IMailService MainService { get; }
+        public XueLeMeContext Context { get; }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
