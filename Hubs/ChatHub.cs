@@ -13,23 +13,25 @@ namespace XueLeMeBackend.Hubs
 {
     public class ChatHub: Hub
     {
-        public ChatHub(ILogger<ChatHub> logger, XueLeMeContext xueLeMeContext, IGroupService groupService, IAccountService accountService)
+        public ChatHub(XueLeMeContext xueLeMeContext, IGroupService groupService, IAccountService accountService)
         {
-            Logger = logger;
-            Logger.LogInformation("new ChatHub!");
             XueLeMeContext = xueLeMeContext;
             GroupService = groupService;
             AccountService = accountService;
         }
 
-        public ILogger<ChatHub> Logger { get; }
         public XueLeMeContext XueLeMeContext { get; }
         public IGroupService GroupService { get; }
         public IAccountService AccountService { get; }  
         public static Dictionary<int, string> UserIdToConnectionId = new Dictionary<int, string>();
         public static Dictionary<string, int> ConnectionIdToUserId = new Dictionary<string, int>();
-        public async Task<string> SendMessage(int userid, int groupid, int type, string content)
+        public async Task<string> SendMessage(int groupid, int type, string content)
         {
+            bool hasUserId = ConnectionIdToUserId.TryGetValue(Context.ConnectionId, out int userid);
+            if (!hasUserId)
+            {
+                return "当前未经过身份认证";
+            }
             var group = await GroupService.FromGroupId(groupid);
             if (group.State != ServiceResultEnum.Exist)
             {
@@ -70,7 +72,6 @@ namespace XueLeMeBackend.Hubs
             var user = await AccountService.UserFromId(userid);
             if (user.State != ServiceResultEnum.Exist)
             {
-                Logger.LogInformation($"user id {userid} does not exsit");
                 return "用户不存在";
             }
             var groups = (await GroupService.MyJoinedGroups(user.ExtraData)).ExtraData.ToList();
@@ -100,13 +101,8 @@ namespace XueLeMeBackend.Hubs
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            Logger.LogInformation($"{Context.ConnectionId} 's connection is lost");
             await QuitCurrentRoomAsync();
-        }
-
-        public override async Task OnConnectedAsync()
-        {
-            Logger.LogInformation($"{Context.ConnectionId} 's connection established");
+            await base.OnDisconnectedAsync(exception);
         }
 
     }

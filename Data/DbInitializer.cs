@@ -29,8 +29,10 @@ namespace XueLeMeBackend.Data
         }
         public void DoInit(XueLeMeContext context)
         {
+            Logger.LogInformation("Initializing database...");
             if (!Configuration.GetValue<bool>("IsServer"))
             {
+                Logger.LogWarning("Removing database...");
                 context.Database.EnsureDeleted();
             }
             context.Database.EnsureCreated();
@@ -42,6 +44,7 @@ namespace XueLeMeBackend.Data
             JoinGroup(context, user2, group1);
             JoinGroup(context, user3, group2);
             context.SaveChanges();
+            Logger.LogInformation("Initialization completed.");
         }
 
         private User CreateUser(XueLeMeContext context, string mailAdress, string password)
