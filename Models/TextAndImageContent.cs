@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace XueLeMeBackend.Models
 {
-    public class PostReply
+    public class TextAndImageContent
     {
         public int Id { get; set; }
-        public User Responder { get; set; }
-        public PostReply Reference { get; set; }
-        public ReplyContent Content { get; set; }
+        public string Text { get; set; }
+        public ICollection<AdditionalImage> Images { get; set; }
     }
 }

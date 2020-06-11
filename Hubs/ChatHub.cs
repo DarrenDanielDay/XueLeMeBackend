@@ -30,7 +30,11 @@ namespace XueLeMeBackend.Hubs
             bool hasUserId = ConnectionIdToUserId.TryGetValue(Context.ConnectionId, out int userid);
             if (!hasUserId)
             {
-                return "当前未经过身份认证";
+                return "当前未确客户端用户身份";
+            }
+            if (type == (int) ChatMessage.MessageTypeEnum.Image && !CheckImageExist(content))
+            {
+                return "找不到消息的图片资源，请先上传图片资源";
             }
             var group = await GroupService.FromGroupId(groupid);
             if (group.State != ServiceResultEnum.Exist)
@@ -97,6 +101,11 @@ namespace XueLeMeBackend.Hubs
                 var groups = (await GroupService.MyJoinedGroups(new User { Id=uid})).ExtraData.ToList();
                 groups.ForEach(async g => await Groups.RemoveFromGroupAsync(connid, g.Id.ToString()));
             }
+        }
+
+        private bool CheckImageExist(string imageMD5)
+        {
+            return XueLeMeContext.BinaryFiles.Where(f => f.MD5 == imageMD5).Any();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)

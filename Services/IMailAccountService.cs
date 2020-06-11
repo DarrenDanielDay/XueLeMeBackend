@@ -62,5 +62,6 @@ namespace XueLeMeBackend.Services
         /// <param name="token"></param>
         /// <returns></returns>
         public Task<ServiceResult<bool>> AuthMailAddress(string token);
+        public Task<ServiceResult<int?>> UserIdOfMail(string mail);
     }
 }

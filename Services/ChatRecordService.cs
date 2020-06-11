@@ -28,6 +28,9 @@ namespace XueLeMeBackend.Services
             if (limit >= 100)
             {
                 return Task.FromResult(Invalid<IEnumerable<ChatRecord>>(null, "查询条数过多"));
+            } else if (limit <= 0)
+            {
+                return Task.FromResult(Invalid<IEnumerable<ChatRecord>>(null, "查询条数应当为正数"));
             }
             var records = Context.ChatRecords.Where(r => r.CreatedTime < time).OrderBy(r => r.CreatedTime).Take(limit);
             return Task.FromResult(Exist(records.AsEnumerable()));

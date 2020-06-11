@@ -101,6 +101,13 @@ namespace XueLeMeBackend.Controllers
         }
 
         [HttpGet]
+        [Route("MailAuth/QueryId")]
+        public async Task<ServiceResult<int?>> UserIdOfMail(string mail)
+        {
+            return await MailAccountService.UserIdOfMail(mail);
+        }
+
+        [HttpGet]
         [Route("Detail/{userid}")]
         public async Task<ServiceResult<UserDetail>> Detail(int userid)
         {

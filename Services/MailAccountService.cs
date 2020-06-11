@@ -168,6 +168,16 @@ namespace XueLeMeBackend.Services
             return Success("重置密码成功");
         }
 
+        public async Task<ServiceResult<int?>> UserIdOfMail(string mail)
+        {
+            var exist = await MailExists(mail);
+            if (exist.State != ServiceResultEnum.Exist)
+            {
+                return Result<int?>(exist.State, null, exist.Detail);
+            }
+            return Exist<int?>(exist.ExtraData.Id, "查询成功");
+        }
+
         public async Task<ServiceResult<bool>> VerifyMailPassword(string mail, string token)
         {
             var exist = await MailExists(mail);

@@ -30,7 +30,7 @@ namespace XueLeMeBackend.Data
         public void DoInit(XueLeMeContext context)
         {
             Logger.LogInformation("Initializing database...");
-            if (!Configuration.GetValue<bool>("IsServer"))
+            //if (!Configuration.GetValue<bool>("IsServer"))
             {
                 Logger.LogWarning("Removing database...");
                 context.Database.EnsureDeleted();

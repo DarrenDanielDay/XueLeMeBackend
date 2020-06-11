@@ -35,6 +35,8 @@ namespace XueLeMeBackend
             services.AddSingleton<DbInitializer>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<ChatRecordService>();
+            services.AddScoped<TopicService>();
             services.AddDbContext<XueLeMeContext>(
                 o => o.UseMySql(
                     Configuration.GetConnectionString("MySQLConnectString"),
