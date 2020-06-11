@@ -37,12 +37,22 @@ namespace XueLeMeBackend
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<ChatRecordService>();
             services.AddScoped<TopicService>();
-            services.AddDbContext<XueLeMeContext>(
-                o => o.UseMySql(
-                    Configuration.GetConnectionString("MySQLConnectString"),
-                    mysqlopt => mysqlopt.ServerVersion(new Version(8, 0, 3), ServerType.MySql)
-                ),
+            if (Configuration.GetValue<bool>("IsServer"))
+            {
+                services.AddDbContext<XueLeMeContext>(
+                    o => o.UseMySql(
+                        Configuration.GetConnectionString("MySQLConnectString"),
+                        mysqlopt => mysqlopt.ServerVersion(new Version(5, 7, 29), ServerType.MySql)
+                    ),
                 ServiceLifetime.Scoped);
+            }
+            else
+            {
+                services.AddDbContext<XueLeMeContext>(
+                    o => o.UseSqlite("Data Source=xuelemedbsqlite.db"),
+                ServiceLifetime.Scoped);
+            }
+
 
             services.AddSingleton<IMailService, QQMailService>();
             services.AddSingleton<MD5Service>();

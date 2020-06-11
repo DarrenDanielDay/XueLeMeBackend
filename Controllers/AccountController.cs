@@ -116,7 +116,7 @@ namespace XueLeMeBackend.Controllers
             {
                 return Result<UserDetail>(user.State, null, user.Detail);
             }
-            return Exist(new UserDetail { Avatar = user.ExtraData.Avatar.MD5, Id = user.ExtraData.Id, Nickname = user.ExtraData.Nickname });
+            return Exist(new UserDetail { Avatar = user.ExtraData.Avatar?.MD5, Id = user.ExtraData.Id, Nickname = user.ExtraData.Nickname });
         }
 
         [HttpPost]
