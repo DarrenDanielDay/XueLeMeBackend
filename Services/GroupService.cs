@@ -95,7 +95,7 @@ namespace XueLeMeBackend.Services
         public Task<ServiceResult<IEnumerable<ChatGroup>>> MyJoinedGroups(User user)
         {
             var groups = Context.GroupMemberships.Where(m => m.UserId == user.Id).Select(m => m.ChatGroup).ToList();
-            return Task.FromResult(Exist(groups.AsEnumerable()));
+            return Task.FromResult(Exist(groups.AsEnumerable(), "查询成功"));
         }
 
         public async Task<ServiceResult<ChatGroup>> NewGroup(User owner, string groupName)

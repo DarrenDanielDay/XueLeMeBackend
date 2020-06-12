@@ -144,5 +144,19 @@ namespace XueLeMeBackend.Controllers
             }
             return Exist(group.ExtraData.ToDetail(), "查询成功");
         }
+
+        [HttpGet]
+        [Route("MyJoinedGroup/{userid}")]
+        public async Task<ServiceResult<IEnumerable<GroupBrief>>> MyJoinedGroups(int userid)
+        {
+            var user = await AccountService.UserFromId(userid);
+            if (user.State != ServiceResultEnum.Exist)
+            {
+                return Result<IEnumerable<GroupBrief>>(user.State, null, user.Detail);
+            }
+            var groupsResult = await GroupService.MyJoinedGroups(user.ExtraData);
+            var groups = groupsResult.ExtraData.Select(g => new GroupBrief { Id=g.Id, Name=g.GroupName});
+            return Result(groupsResult.State, groups, groupsResult.Detail);
+        }
     }
 }

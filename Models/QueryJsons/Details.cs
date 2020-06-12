@@ -12,6 +12,12 @@ namespace XueLeMeBackend.Models.QueryJsons
         public string Avatar { get; set; }
     }
 
+    public class GroupBrief
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class GroupDetail
     {
         public int Id { get; set; }
