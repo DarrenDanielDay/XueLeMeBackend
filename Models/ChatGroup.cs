@@ -13,8 +13,8 @@ namespace XueLeMeBackend.Models
         public int CreatorId { get; set; }
         public User Creator { get; set; }
         public string GroupName { get; set; }
-        public ICollection<GroupMembership> Memberships { get; set; }
-        public ICollection<JoinGroupRequest> JoinGroupRequests { get; set; }
+        public ICollection<GroupMembership> Memberships { get; set; } = new List<GroupMembership>();
+        public ICollection<JoinGroupRequest> JoinGroupRequests { get; set; } = new List<JoinGroupRequest>();
         public GroupDetail ToDetail()
         {
             var memberships = Memberships.ToList();

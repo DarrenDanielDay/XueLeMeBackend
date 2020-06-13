@@ -67,7 +67,7 @@ namespace XueLeMeBackend.Services
             {
                 return Exist("您已经申请加群");
             }
-            Context.JoinGroupRequests.Add(new JoinGroupRequest { User = user, Group = chatGroup});
+            Context.JoinGroupRequests.Add(new JoinGroupRequest { User = user, Group = chatGroup, UserId = user.Id, GroupId = chatGroup.Id});
             await Context.SaveChangesAsync();
             return Success("加群申请成功");
         }
