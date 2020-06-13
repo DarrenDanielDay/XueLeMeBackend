@@ -8,7 +8,7 @@ using XueLeMeBackend.Models.Fragments;
 using static XueLeMeBackend.Services.ServiceMessage;
 namespace XueLeMeBackend.Services
 {
-    public class GroupService : IGroupService
+    public class GroupService
     {
         public GroupService(XueLeMeContext context)
         {
@@ -30,9 +30,17 @@ namespace XueLeMeBackend.Services
                 return NotFound("该加群申请不存在");
             }
             Context.JoinGroupRequests.Remove(request);
-            Context.GroupMemberships.Add(new GroupMembership {UserId=request.User.Id, ChatGroupId=request.Group.Id });
+            Context.GroupMemberships.Add(new GroupMembership {UserId=request.User.Id, ChatGroupId=request.Group.Id, Role=GroupRole.Member });
             await Context.SaveChangesAsync();
             return Success("通过加群成功");
+        }
+
+        public async Task<ServiceResult<object>> ChangeName(ChatGroup chatGroup, string newName)
+        {
+            chatGroup.GroupName = newName;
+            Context.ChatGroups.Update(chatGroup);
+            await Context.SaveChangesAsync();
+            return Success("修改成功");
         }
 
         public Task<ServiceResult<ChatGroup>> FromGroupId(int id)
@@ -49,6 +57,11 @@ namespace XueLeMeBackend.Services
 
         public async Task<ServiceResult<object>> JoinGroup(User user, ChatGroup chatGroup)
         {
+            var membership = Context.GroupMemberships.FirstOrDefault(m => m.UserId == user.Id && m.ChatGroupId == chatGroup.Id);
+            if (membership != null)
+            {
+                return Exist("您已在该群中");
+            }
             var request = Context.JoinGroupRequests.FirstOrDefault(r => r.User.Id == user.Id && r.Group.Id == chatGroup.Id);
             if (request != null)
             {
@@ -66,7 +79,8 @@ namespace XueLeMeBackend.Services
             {
                 return Result<IEnumerable<JoinGroupRequest>>(group.State, null, group.Detail);
             }
-            return Exist(group.ExtraData.JoinGroupRequests.AsEnumerable(), "查询成功");
+            var requests = Context.JoinGroupRequests.Where(r => r.GroupId == group.ExtraData.Id);
+            return Exist(requests.AsEnumerable(), "查询成功");
         }
 
         public Task<ServiceResult<JoinGroupRequest>> JoinRequestFromId(int id)
@@ -82,6 +96,10 @@ namespace XueLeMeBackend.Services
             {
                 return Unauthorized(owns.Detail);
             }
+            if (chatGroup.CreatorId == owner.Id)
+            {
+                return Invalid("不能踢群主");
+            }
             var membership = Context.GroupMemberships.FirstOrDefault(m => m.UserId == user.Id && m .ChatGroupId == chatGroup.Id);
             if (membership == null)
             {
@@ -94,32 +112,48 @@ namespace XueLeMeBackend.Services
 
         public Task<ServiceResult<IEnumerable<ChatGroup>>> MyJoinedGroups(User user)
         {
-            var groups = Context.GroupMemberships.Where(m => m.UserId == user.Id).Select(m => m.ChatGroup).ToList();
+            var groups = Context.GroupMemberships.Where(m => m.UserId == user.Id && m.Role != GroupRole.Owner).Select(m => m.ChatGroup).ToList();
+            return Task.FromResult(Exist(groups.AsEnumerable(), "查询成功"));
+        }
+
+        public Task<ServiceResult<IEnumerable<ChatGroup>>> MyCreatedGroups(User user)
+        {
+            var groups = Context.GroupMemberships.Where(m => m.UserId == user.Id && m.Role == GroupRole.Owner).Select(m => m.ChatGroup).ToList();
             return Task.FromResult(Exist(groups.AsEnumerable(), "查询成功"));
         }
 
         public async Task<ServiceResult<ChatGroup>> NewGroup(User owner, string groupName)
         {
-            var group = new ChatGroup { Creator = owner, GroupName = groupName };
+            var group = new ChatGroup { Creator = owner, GroupName = groupName, CreatorId = owner.Id };
             Context.ChatGroups.Add(group);
             await Context.SaveChangesAsync();
-            Context.GroupMemberships.Add(new GroupMembership { ChatGroupId=group.Id, UserId = owner.Id });
+            Context.GroupMemberships.Add(new GroupMembership { ChatGroupId=group.Id, UserId = owner.Id, Role = GroupRole.Owner });
             await Context.SaveChangesAsync();
             return Success(group);
         }
 
-        public Task<ServiceResult<bool>> OwnsGroup(User user, ChatGroup chatGroup)
+        public async Task<ServiceResult<bool>> OwnsGroup(User user, ChatGroup chatGroup)
         {
-            var group = Context.ChatGroups.FirstOrDefault(g => g.Creator.Id == user.Id);
-            return Task.FromResult(group != null? Authorized(true) : Unauthorized(false, "您不是群主"));
+            var ismember = await HasMemberShip(user, chatGroup);
+            if (!ismember.ExtraData)
+            {
+                return NotFound(false,ismember.Detail);
+            }
+            var group = Context.ChatGroups.FirstOrDefault(g => g.Creator.Id == user.Id && chatGroup.Id == g.Id);
+            return group != null? Authorized(true, "您是群主") : Unauthorized(false, "您不是群主");
         }
 
         public async Task<ServiceResult<object>> QuitGroup(User user, ChatGroup chatGroup)
         {
             var ismember = await HasMemberShip(user, chatGroup);
-            if (ismember.ExtraData)
+            if (!ismember.ExtraData)
             {
-                return Exist(ismember.Detail);
+                return NotFound(ismember.Detail);
+            }
+            var owns = await OwnsGroup(user, chatGroup);
+            if (owns.ExtraData)
+            {
+                return Invalid(owns.Detail);
             }
             var membership = Context.GroupMemberships.FirstOrDefault(m => m.UserId == user.Id && m.ChatGroupId == chatGroup.Id);
             Context.GroupMemberships.Remove(membership);

@@ -13,7 +13,7 @@ namespace XueLeMeBackend.Hubs
 {
     public class ChatHub: Hub
     {
-        public ChatHub(XueLeMeContext xueLeMeContext, IGroupService groupService, IAccountService accountService)
+        public ChatHub(XueLeMeContext xueLeMeContext, GroupService groupService, AccountService accountService)
         {
             XueLeMeContext = xueLeMeContext;
             GroupService = groupService;
@@ -21,8 +21,8 @@ namespace XueLeMeBackend.Hubs
         }
 
         public XueLeMeContext XueLeMeContext { get; }
-        public IGroupService GroupService { get; }
-        public IAccountService AccountService { get; }  
+        public GroupService GroupService { get; }
+        public AccountService AccountService { get; }  
         public static Dictionary<int, string> UserIdToConnectionId = new Dictionary<int, string>();
         public static Dictionary<string, int> ConnectionIdToUserId = new Dictionary<string, int>();
         public async Task<string> SendMessage(int groupid, int type, string content)

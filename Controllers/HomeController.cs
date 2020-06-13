@@ -12,12 +12,6 @@ namespace XueLeMeBackend.Controllers
     [Controller]
     public class HomeController : Controller
     {
-        public HomeController(IFileService fileService)
-        {
-            FileService = fileService;
-        }
-
-        public IFileService FileService { get; }
 
         [HttpGet]
         [Route("")]

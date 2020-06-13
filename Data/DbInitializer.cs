@@ -71,21 +71,23 @@ namespace XueLeMeBackend.Data
             ChatGroup group = new ChatGroup
             {
                 Creator = owner,
+                CreatorId = owner.Id,
                 GroupName = name,
                 Memberships = new List<GroupMembership> {  }
             };
-            GroupMembership membership = new GroupMembership { User = owner, ChatGroup = group };
+            GroupMembership membership = new GroupMembership { User = owner, ChatGroup = group, Role = GroupRole.Owner };
             group.Memberships.Add(membership);
             context.ChatGroups.Add(group);
             context.SaveChanges();
             return group;
         }
-        private void JoinGroup(XueLeMeContext context, User user, ChatGroup group)
+        private void JoinGroup(XueLeMeContext context, User user, ChatGroup group, GroupRole role = GroupRole.Member)
         {
             GroupMembership membership = new GroupMembership
             {
                 User = user,
                 ChatGroup = group,
+                Role = role,
             };
             context.GroupMemberships.Add(membership);
             context.SaveChanges();

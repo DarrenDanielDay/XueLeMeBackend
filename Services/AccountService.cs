@@ -7,7 +7,7 @@ using XueLeMeBackend.Models;
 using static XueLeMeBackend.Services.ServiceMessage;
 namespace XueLeMeBackend.Services
 {
-    public class AccountService : IAccountService
+    public class AccountService
     {
         public AccountService(XueLeMeContext context)
         {

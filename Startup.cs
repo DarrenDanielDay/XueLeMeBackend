@@ -33,8 +33,8 @@ namespace XueLeMeBackend
         {
             services.AddSignalR();
             services.AddSingleton<DbInitializer>();
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<AccountService>();
+            services.AddScoped<GroupService>();
             services.AddScoped<ChatRecordService>();
             services.AddScoped<TopicService>();
             if (Configuration.GetValue<bool>("IsServer"))
@@ -59,7 +59,7 @@ namespace XueLeMeBackend
             services.AddScoped<IFileService, DbFileService>();
 
             services.AddSingleton<ISecurityService, MD5SecurityService>();
-            services.AddScoped<IMailAccountService, MailAccountService>();
+            services.AddScoped<MailAccountService>();
 
             services.AddControllers();
             services.AddSwaggerDocument();

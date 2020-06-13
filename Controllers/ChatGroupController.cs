@@ -17,14 +17,14 @@ namespace XueLeMeBackend.Controllers
     [Route("api/[controller]")]
     public class ChatGroupController : ControllerBase
     {
-        public ChatGroupController(IAccountService accountService, IGroupService groupService)
+        public ChatGroupController(AccountService accountService, GroupService groupService)
         {
             AccountService = accountService;
             GroupService = groupService;
         }
 
-        public IAccountService AccountService { get; }
-        public IGroupService GroupService { get; }
+        public AccountService AccountService { get; }
+        public GroupService GroupService { get; }
 
         [HttpPost]
         [Route("Create")]
@@ -37,6 +37,22 @@ namespace XueLeMeBackend.Controllers
             }
             var newGroup = await GroupService.NewGroup(result.ExtraData, createGroupForm.GroupName);
             return newGroup.State == ServiceResultEnum.Success ? Success(newGroup.ExtraData.ToDetail(), newGroup.Detail) : Fail<GroupDetail>(null, newGroup.Detail);
+        }
+
+        [HttpPost]
+        [Route("ChangeName")]
+        public async Task<ServiceResult<object>> ChangeName([FromBody]ChangeGroupNameForm changeGroupNameForm)
+        {
+            if (!MyForm.ReflectCheck(changeGroupNameForm))
+            {
+                return Invalid("参数非法");
+            }
+            var result = await GroupService.FromGroupId(changeGroupNameForm.GroupId);
+            if (result.State != ServiceResultEnum.Exist)
+            {
+                return Result(result.State, result.Detail);
+            }
+            return await GroupService.ChangeName(result.ExtraData, changeGroupNameForm.NewName);
         }
 
         [HttpPost]
@@ -58,9 +74,10 @@ namespace XueLeMeBackend.Controllers
 
         [HttpGet]
         [Route("JoinRequests/{groupId}")]
-        public async Task<ServiceResult<IEnumerable<JoinGroupRequest>>> GetJoinRequests(int groupId)
+        public async Task<ServiceResult<IEnumerable<JoinGroupRequestDetail>>> GetJoinRequests(int groupId)
         {
-            return await GroupService.JoinGroupRequests(groupId);
+            var result = await GroupService.JoinGroupRequests(groupId);
+            return Result(result.State, result.ExtraData.Select(r => r.ToDetail()), result.Detail);
         }
 
         [HttpPost]
@@ -156,6 +173,20 @@ namespace XueLeMeBackend.Controllers
             }
             var groupsResult = await GroupService.MyJoinedGroups(user.ExtraData);
             var groups = groupsResult.ExtraData.Select(g => new GroupBrief { Id=g.Id, Name=g.GroupName});
+            return Result(groupsResult.State, groups, groupsResult.Detail);
+        }
+
+        [HttpGet]
+        [Route("MyCreatedGroup/{userid}")]
+        public async Task<ServiceResult<IEnumerable<GroupBrief>>> MyCreatedGroups(int userid)
+        {
+            var user = await AccountService.UserFromId(userid);
+            if (user.State != ServiceResultEnum.Exist)
+            {
+                return Result<IEnumerable<GroupBrief>>(user.State, null, user.Detail);
+            }
+            var groupsResult = await GroupService.MyCreatedGroups(user.ExtraData);
+            var groups = groupsResult.ExtraData.Select(g => new GroupBrief { Id = g.Id, Name = g.GroupName });
             return Result(groupsResult.State, groups, groupsResult.Detail);
         }
     }

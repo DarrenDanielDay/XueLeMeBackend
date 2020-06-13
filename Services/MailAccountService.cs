@@ -11,7 +11,7 @@ using static XueLeMeBackend.Services.ServiceMessage;
 
 namespace XueLeMeBackend.Services
 {
-    public class MailAccountService : IMailAccountService
+    public class MailAccountService
     {
         public static readonly string AuthMailLinkFormat = "http://{0}/api/Account/MailAuth/Confirm/{1}";
         public static readonly string ResetPasswordLinkFormat = "http://{0}/api/Account/MailAuth/ResetPassword/{1}";

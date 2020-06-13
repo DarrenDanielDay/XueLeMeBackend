@@ -17,14 +17,14 @@ namespace XueLeMeBackend.Controllers
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
-        public AccountController(IMailAccountService mailAccountService, IAccountService accountService)
+        public AccountController(MailAccountService mailAccountService, AccountService accountService)
         {
             MailAccountService = mailAccountService;
             AccountService = accountService;
         }
 
-        public IMailAccountService MailAccountService { get; }
-        public IAccountService AccountService { get; }
+        public MailAccountService MailAccountService { get; }
+        public AccountService AccountService { get; }
 
         [HttpPost]
         [Route("MailAuth/Register")]

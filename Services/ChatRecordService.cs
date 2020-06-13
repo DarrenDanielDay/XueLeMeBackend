@@ -19,8 +19,8 @@ namespace XueLeMeBackend.Services
 
         public Task<ServiceResult<ChatRecord>> FromRecordId(int id)
         {
-            var record = Context.ChatRecords.First(r => r.Id == id);
-            return Task.FromResult(record == null ? Exist(record, "查询成功") : NotFound(record, "记录不存在"));
+            var record = Context.ChatRecords.FirstOrDefault(r => r.Id == id);
+            return Task.FromResult(record != null ? Exist(record, "查询成功") : NotFound(record, "记录不存在"));
         }
 
         public Task<ServiceResult<IEnumerable<ChatRecord>>> RecordRightBefore(int groupId, DateTime time, int limit)

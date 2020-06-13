@@ -10,6 +10,7 @@ namespace XueLeMeBackend.Models
     public class ChatGroup
     {
         public int Id { get; set; }
+        public int CreatorId { get; set; }
         public User Creator { get; set; }
         public string GroupName { get; set; }
         public ICollection<GroupMembership> Memberships { get; set; }
