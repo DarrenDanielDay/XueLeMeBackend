@@ -36,7 +36,7 @@ namespace XueLeMeBackend.Hubs
             {
                 return "找不到消息的图片资源，请先上传图片资源";
             }
-            var group = await GroupService.FromGroupId(groupid);
+            var group = await GroupService.GroupFromId(groupid);
             if (group.State != ServiceResultEnum.Exist)
             {
                 return group.Detail;

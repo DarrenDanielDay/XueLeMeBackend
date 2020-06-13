@@ -47,7 +47,7 @@ namespace XueLeMeBackend.Controllers
             {
                 return Invalid("参数非法");
             }
-            var result = await GroupService.FromGroupId(changeGroupNameForm.GroupId);
+            var result = await GroupService.GroupFromId(changeGroupNameForm.GroupId);
             if (result.State != ServiceResultEnum.Exist)
             {
                 return Result(result.State, result.Detail);
@@ -64,7 +64,7 @@ namespace XueLeMeBackend.Controllers
             {
                 return Result(user.State, user.Detail);
             }
-            var group = await GroupService.FromGroupId(joinGroupForm.GroupId);
+            var group = await GroupService.GroupFromId(joinGroupForm.GroupId);
             if (group.State != ServiceResultEnum.Exist)
             {
                 return Result(group.State, group.Detail);
@@ -124,7 +124,7 @@ namespace XueLeMeBackend.Controllers
             {
                 return Result(user.State, user.Detail);
             }
-            var group = await GroupService.FromGroupId(userAndGroupForm.GroupId);
+            var group = await GroupService.GroupFromId(userAndGroupForm.GroupId);
             if (group.State != ServiceResultEnum.Exist)
             {
                 return Result(group.State, group.Detail);
@@ -142,7 +142,7 @@ namespace XueLeMeBackend.Controllers
             {
                 return Result(owner.State, owner.Detail);
             }
-            var group = await GroupService.FromGroupId(kickUserForm.OwnerId);
+            var group = await GroupService.GroupFromId(kickUserForm.OwnerId);
             if (group.State != ServiceResultEnum.Exist)
             {
                 return Result(group.State, group.Detail);
@@ -154,7 +154,7 @@ namespace XueLeMeBackend.Controllers
         [Route("Detail/{groupid}")]
         public async Task<ServiceResult<GroupDetail>> Detail(int groupid)
         {
-            var group = await GroupService.FromGroupId(groupid);
+            var group = await GroupService.GroupFromId(groupid);
             if (group.State != ServiceResultEnum.Exist)
             {
                 return NotFound<GroupDetail>(null, group.Detail);

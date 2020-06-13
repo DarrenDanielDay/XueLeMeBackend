@@ -32,6 +32,10 @@ namespace XueLeMeBackend.Services
         public Task<ServiceResult<User>> UserFromId(int id)
         {
             var user = Context.Users.FirstOrDefault(u => u.Id == id);
+            if (user != null)
+            {
+                user.Authentications = Context.Authentications.Where(auth => auth.User.Id == user.Id).ToList();
+            }
             return Task.FromResult(user == null ? NotFound(user, "用户不存在") : Exist(user));
         }
     }
