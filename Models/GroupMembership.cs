@@ -16,8 +16,8 @@ namespace XueLeMeBackend.Models
         public int UserId { get; set; }
         public int ChatGroupId { get; set; }
         public GroupRole Role { get; set; }
-        public User User { get; set; }
-        public ChatGroup ChatGroup { get; set; }
+        public virtual User User { get; set; }
+        public virtual ChatGroup ChatGroup { get; set; }
 
     }
 }

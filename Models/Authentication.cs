@@ -11,7 +11,8 @@ namespace XueLeMeBackend.Models
         {
             MailAddress,
         }
-        public User User { get; set; }
+        public virtual User User { get; set; }
+        public int UserId { get; set; }
         public int Id { get; set; }
         public DateTime CreatedTime { get; set; }
         public AuthTypeEnum Type { get; set; }

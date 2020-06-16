@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace XueLeMeBackend.Services
 
         public Task<ServiceResult<ChatRecord>> FromRecordId(int id)
         {
-            var record = Context.ChatRecords.FirstOrDefault(r => r.Id == id);
+            var record = Context.ChatRecords.Include(r => r.Group).Include(r => r.Message).Include(r => r.Sender).FirstOrDefault(r => r.Id == id);
             return Task.FromResult(record != null ? Exist(record, "查询成功") : NotFound(record, "记录不存在"));
         }
 

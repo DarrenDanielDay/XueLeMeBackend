@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,11 +32,7 @@ namespace XueLeMeBackend.Services
 
         public Task<ServiceResult<User>> UserFromId(int id)
         {
-            var user = Context.Users.FirstOrDefault(u => u.Id == id);
-            if (user != null)
-            {
-                user.Authentications = Context.Authentications.Where(auth => auth.User.Id == user.Id).ToList();
-            }
+            var user = Context.Users.Include(u => u.Authentications).FirstOrDefault(u => u.Id == id);
             return Task.FromResult(user == null ? NotFound(user, "用户不存在") : Exist(user));
         }
     }

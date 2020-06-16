@@ -9,8 +9,8 @@ namespace XueLeMeBackend.Models.Fragments
     public class JoinGroupRequest
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
-        public int GroupId { get; set; }
+        //public int UserId { get; set; }
+        //public int GroupId { get; set; }
         public User User { get; set; }
         public ChatGroup Group { get; set; }
         public JoinGroupRequestDetail ToDetail()
@@ -18,8 +18,8 @@ namespace XueLeMeBackend.Models.Fragments
             return new JoinGroupRequestDetail
             {
                 Id = Id,
-                UserId = UserId,
-                GroupId = GroupId,
+                UserId = User.Id,
+                GroupId = Group.Id,
             };
         }
     }

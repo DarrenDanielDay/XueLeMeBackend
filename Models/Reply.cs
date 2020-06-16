@@ -8,12 +8,12 @@ namespace XueLeMeBackend.Models
     public class Reply
     {
         public int Id { get; set; }
-        public Topic Topic { get; set; }
+        public virtual Topic Topic { get; set; }
         public int TopicId { get; set; }
-        public User Responder { get; set; }
+        public virtual User Responder { get; set; }
         public int ResponderId { get; set; }
-        public Reply Reference { get; set; }
-        public TextAndImageContent Content { get; set; }
+        public virtual Reply Reference { get; set; }
+        public virtual TextAndImageContent Content { get; set; }
         public int ContentId { get; set; }
     }
 }

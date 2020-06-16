@@ -14,6 +14,11 @@ namespace XueLeMeBackend.Data
         {
             Initializer = initializer;
             initializer.Init(this);
+            Authentications.Include(a => a.User);
+            ChatGroups.Include(g => g.Creator).Include(g => g.Memberships).Include(g => g.JoinGroupRequests);
+            JoinGroupRequests.Include(r => r.User).Include(r => r.Group);
+            GroupMemberships.Include(m => m.ChatGroup).Include(m => m.User);
+
         }
         // Models
         public DbSet<AdditionalImage> AdditionalImages { get; set; }

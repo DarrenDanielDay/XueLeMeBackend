@@ -8,9 +8,9 @@ namespace XueLeMeBackend.Models
     public class AdditionalImage
     {
         public int Id { get; set; }
-        public BinaryFile ImageFile { get; set; }
+        public virtual BinaryFile ImageFile { get; set; }
         public int ImageFileId { get; set; }
-        public TextAndImageContent TextAndImageContent { get; set; }
+        public virtual TextAndImageContent TextAndImageContent { get; set; }
         public int TextAndImageContentId { get; set; }
     }
 }
