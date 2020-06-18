@@ -10,7 +10,6 @@ namespace XueLeMeBackend.Models.Forms
         public int UserId { get; set; }
         public int TopicId { get; set; }
         public int? ReferenceId { get; set; }
-        public int MyProperty { get; set; }
         public string Content { get; set; }
         public ICollection<string> Images { get; set; }
     }

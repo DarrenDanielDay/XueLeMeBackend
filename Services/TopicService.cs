@@ -235,7 +235,11 @@ namespace XueLeMeBackend.Services
         {
             var topics = Context.Topics.Include(t => t.AppliedTags).Where(t => t.AppliedTags.Any(a => a.TagDisplayName == tag)).ToList();
             var result = new List<Topic>();
-            topics.ForEach(async t => result.Add((await TopicFromId(t.Id)).ExtraData));
+            foreach(var topic in topics)
+            {
+                var detailedTopic = (await TopicFromId(topic.Id)).ExtraData;
+                result.Add(detailedTopic);
+            }
             return topics;
         }
 
