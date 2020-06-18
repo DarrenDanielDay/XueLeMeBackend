@@ -22,6 +22,7 @@ namespace XueLeMeBackend.Data
         }
         // Models
         public DbSet<AdditionalImage> AdditionalImages { get; set; }
+        public DbSet<Anonymous> Anonymous { get; set; }
         public DbSet<AppliedTag> AppliedTags { get; set; }
         public DbSet<Authentication> Authentications { get; set; }
         public DbSet<BinaryFile> BinaryFiles { get; set; }

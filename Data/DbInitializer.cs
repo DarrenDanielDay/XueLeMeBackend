@@ -38,11 +38,12 @@ namespace XueLeMeBackend.Data
             context.Database.EnsureCreated();
             var user1 = CreateUser(context, "614434935@qq.com", "password");
             var user2 = CreateUser(context, "jamesnm2015@163.com", "123456");
-            var user3 = CreateUser(context, "1215196803@qq.com", "123455");
+            var user3 = CreateUser(context, "1215196803@qq.com", "123456");
             var group1 = CreateGroup(context, "group1", user1);
             var group2 = CreateGroup(context, "group2", user1);
             JoinGroup(context, user2, group1);
             JoinGroup(context, user3, group2);
+            CreateZone(context, "数学吧");
             context.SaveChanges();
             Logger.LogInformation("Initialization completed.");
         }
@@ -90,6 +91,16 @@ namespace XueLeMeBackend.Data
                 Role = role,
             };
             context.GroupMemberships.Add(membership);
+            context.SaveChanges();
+        }
+
+        private void CreateZone(XueLeMeContext context, string name)
+        {
+            Zone zone = new Zone
+            {
+                Name = name,
+            };
+            context.Zones.Add(zone);
             context.SaveChanges();
         }
     }

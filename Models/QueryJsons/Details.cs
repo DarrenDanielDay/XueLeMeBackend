@@ -41,4 +41,41 @@ namespace XueLeMeBackend.Models.QueryJsons
         public int UserId { get; set; }
         public int GroupId { get; set; }
     }
+
+    public class TextAndImageContentDetail
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public ICollection<string> Images { get; set; }
+    }
+
+    public class AnonymousDetail
+    {
+        public int UserId { get; set; }
+        public string Fakename { get; set; }
+    }
+
+    public class TopicDetail
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public AnonymousDetail PublisherDetail { get; set; }
+        public int ZoneId { get; set; }
+        public TextAndImageContentDetail ContentDetail { get; set; }
+        public ICollection<string> Tags { get; set; }
+    }
+
+    public class ReplyDetail
+    {
+        public int Id { get; set; }
+        public int TopicId { get; set; }
+        public AnonymousDetail User { get; set; }
+        public TextAndImageContentDetail ContentDetail { get; set; }
+    }
+
+    public class ZoneDetail
+    {
+        public int Id { get; set; }
+        public string ZoneName { get; set; }
+    }
 }

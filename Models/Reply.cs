@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using XueLeMeBackend.Models.QueryJsons;
 namespace XueLeMeBackend.Models
 {
     public class Reply
@@ -15,5 +15,19 @@ namespace XueLeMeBackend.Models
         public virtual Reply Reference { get; set; }
         public virtual TextAndImageContent Content { get; set; }
         public int ContentId { get; set; }
+        public ReplyDetail ToDetail()
+        {
+            return new ReplyDetail
+            {
+                Id = Id,
+                TopicId = TopicId,
+                ContentDetail = Content.ToDetail(),
+                User = new AnonymousDetail
+                {
+                    Fakename = Topic.Anonymous.FirstOrDefault(a => a.UserId == ResponderId).DisplayName,
+                    UserId = ResponderId,
+                },
+            };
+        }
     }
 }

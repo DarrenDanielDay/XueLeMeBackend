@@ -9,7 +9,7 @@ namespace XueLeMeBackend.Models
     {
         public int Id { get; set; }
         public virtual BinaryFile ImageFile { get; set; }
-        public int ImageFileId { get; set; }
+        public string ImageFileMD5 { get; set; }
         public virtual TextAndImageContent TextAndImageContent { get; set; }
         public int TextAndImageContentId { get; set; }
     }

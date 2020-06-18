@@ -36,6 +36,7 @@ namespace XueLeMeBackend
             services.AddScoped<AccountService>();
             services.AddScoped<GroupService>();
             services.AddScoped<ChatRecordService>();
+            services.AddScoped<TagService>();
             services.AddScoped<TopicService>();
             if (Configuration.GetValue<bool>("IsServer"))
             {

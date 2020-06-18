@@ -85,7 +85,7 @@ namespace XueLeMeBackend.Services
             {
                 return Result<IEnumerable<JoinGroupRequest>>(group.State, null, group.Detail);
             }
-            var requests = Context.JoinGroupRequests.Where(r => r.Group.Id == group.ExtraData.Id);
+            var requests = Context.JoinGroupRequests.Include(r => r.User).Include(r=>r.Group).Where(r => r.Group.Id == group.ExtraData.Id);
             return Exist(requests.AsEnumerable(), "查询成功");
         }
 
@@ -119,13 +119,13 @@ namespace XueLeMeBackend.Services
 
         public Task<ServiceResult<IEnumerable<ChatGroup>>> MyJoinedGroups(User user)
         {
-            var groups = Context.GroupMemberships.Where(m => m.UserId == user.Id && m.Role != GroupRole.Owner).Select(m => m.ChatGroup).ToList();
+            var groups = Context.GroupMemberships.Include(m => m.User).Include(m => m.ChatGroup).Where(m => m.UserId == user.Id && m.Role != GroupRole.Owner).Select(m => m.ChatGroup).ToList();
             return Task.FromResult(Exist(groups.AsEnumerable(), "查询成功"));
         }
 
         public Task<ServiceResult<IEnumerable<ChatGroup>>> MyCreatedGroups(User user)
         {
-            var groups = Context.GroupMemberships.Where(m => m.UserId == user.Id && m.Role == GroupRole.Owner).Select(m => m.ChatGroup).ToList();
+            var groups = Context.GroupMemberships.Include(m => m.User).Include(m => m.ChatGroup).Where(m => m.UserId == user.Id && m.Role == GroupRole.Owner).Select(m => m.ChatGroup).ToList();
             return Task.FromResult(Exist(groups.AsEnumerable(), "查询成功"));
         }
 

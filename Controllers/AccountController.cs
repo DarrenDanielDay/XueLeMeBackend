@@ -125,5 +125,26 @@ namespace XueLeMeBackend.Controllers
         {
             return await AccountService.ChangeNickname(changeNicknameForm.UserId, changeNicknameForm.Nickname);
         }
+
+        [HttpPost]
+        [Route("ChangeAvatar")]
+        public async Task<ServiceResult<object>> ChangeAvatar([FromBody] ChangeAvatarForm changeAvatarForm)
+        {
+            var c = AccountService.Context;
+            var user = c.Users.FirstOrDefault(u => u.Id == changeAvatarForm.UserId);
+            if (user == null)
+            {
+                return NotFound<object>("用户不存在");
+            }
+            var file = c.BinaryFiles.FirstOrDefault(f => f.MD5 == changeAvatarForm.Avatar);
+            if (file == null)
+            {
+                return NotFound<object>("文件不存在");
+            }
+            user.Avatar = file;
+            c.Users.Update(user);
+            await c.SaveChangesAsync();
+            return Success("修改头像成功");
+        }
     }
 }

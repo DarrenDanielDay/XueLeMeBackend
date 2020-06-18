@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 
 namespace XueLeMeBackend.Models
 {
-    public class AppliedTag
+    public class Anonymous
     {
         public int Id { get; set; }
-        public virtual Topic Topic { get; set; }
+        public string DisplayName { get; set; }
+        public User User { get; set; }
+        public int UserId { get; set; }
+        public Topic Topic { get; set; }
         public int TopicId { get; set; }
-        public virtual Tag Tag { get; set; }
-        public string TagDisplayName { get; set; }
     }
 }
