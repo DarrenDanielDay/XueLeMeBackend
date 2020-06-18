@@ -32,7 +32,7 @@ namespace XueLeMeBackend.Services
                 return NotFound("该加群申请不存在");
             }
             Context.JoinGroupRequests.Remove(request);
-            Context.GroupMemberships.Add(new GroupMembership {UserId=request.User.Id, ChatGroupId=request.Group.Id, Role=GroupRole.Member });
+            Context.GroupMemberships.Add(new GroupMembership { UserId = request.User.Id, ChatGroupId = request.Group.Id, Role = GroupRole.Member });
             await Context.SaveChangesAsync();
             return Success("通过加群成功");
         }
@@ -47,7 +47,7 @@ namespace XueLeMeBackend.Services
 
         public Task<ServiceResult<ChatGroup>> GroupFromId(int id)
         {
-            var group = Context.ChatGroups.Include(g=>g.Creator).FirstOrDefault(g => g.Id == id);
+            var group = Context.ChatGroups.Include(g => g.Creator).FirstOrDefault(g => g.Id == id);
             if (group != null)
             {
                 group.Memberships = Context.GroupMemberships.Include(m => m.User).Include(m => m.ChatGroup).Where(m => m.ChatGroupId == id).ToList();
@@ -73,7 +73,7 @@ namespace XueLeMeBackend.Services
             {
                 return Exist("您已经申请加群");
             }
-            Context.JoinGroupRequests.Add(new JoinGroupRequest { User = user, Group = chatGroup});
+            Context.JoinGroupRequests.Add(new JoinGroupRequest { User = user, Group = chatGroup });
             await Context.SaveChangesAsync();
             return Success("加群申请成功");
         }
@@ -85,7 +85,7 @@ namespace XueLeMeBackend.Services
             {
                 return Result<IEnumerable<JoinGroupRequest>>(group.State, null, group.Detail);
             }
-            var requests = Context.JoinGroupRequests.Include(r => r.User).Include(r=>r.Group).Where(r => r.Group.Id == group.ExtraData.Id);
+            var requests = Context.JoinGroupRequests.Include(r => r.User).Include(r => r.Group).Where(r => r.Group.Id == group.ExtraData.Id);
             return Exist(requests.AsEnumerable(), "查询成功");
         }
 
@@ -99,7 +99,7 @@ namespace XueLeMeBackend.Services
         public async Task<ServiceResult<object>> KickUser(User owner, ChatGroup chatGroup, User user)
         {
             var owns = await OwnsGroup(owner, chatGroup);
-            if(!owns.ExtraData)
+            if (!owns.ExtraData)
             {
                 return Unauthorized(owns.Detail);
             }
@@ -107,7 +107,7 @@ namespace XueLeMeBackend.Services
             {
                 return Invalid("不能踢群主");
             }
-            var membership = Context.GroupMemberships.FirstOrDefault(m => m.UserId == user.Id && m .ChatGroupId == chatGroup.Id);
+            var membership = Context.GroupMemberships.FirstOrDefault(m => m.UserId == user.Id && m.ChatGroupId == chatGroup.Id);
             if (membership == null)
             {
                 return NotFound("该成员已不在群聊");
@@ -134,7 +134,7 @@ namespace XueLeMeBackend.Services
             var group = new ChatGroup { Creator = owner, GroupName = groupName, CreatorId = owner.Id };
             Context.ChatGroups.Add(group);
             await Context.SaveChangesAsync();
-            Context.GroupMemberships.Add(new GroupMembership { ChatGroupId=group.Id, UserId = owner.Id, Role = GroupRole.Owner });
+            Context.GroupMemberships.Add(new GroupMembership { ChatGroupId = group.Id, UserId = owner.Id, Role = GroupRole.Owner });
             await Context.SaveChangesAsync();
             return Success(group, "创建群聊成功");
         }
@@ -144,10 +144,10 @@ namespace XueLeMeBackend.Services
             var ismember = await HasMemberShip(user, chatGroup);
             if (!ismember.ExtraData)
             {
-                return NotFound(false,ismember.Detail);
+                return NotFound(false, ismember.Detail);
             }
             var group = Context.ChatGroups.FirstOrDefault(g => g.Creator.Id == user.Id && chatGroup.Id == g.Id);
-            return group != null? Authorized(true, "您是群主") : Unauthorized(false, "您不是群主");
+            return group != null ? Authorized(true, "您是群主") : Unauthorized(false, "您不是群主");
         }
 
         public async Task<ServiceResult<object>> QuitGroup(User user, ChatGroup chatGroup)

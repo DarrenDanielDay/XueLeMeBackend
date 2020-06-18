@@ -124,7 +124,8 @@ namespace XueLeMeBackend.Services
                 return Result(exist.State, exist.Detail);
             }
             var request = await Context.ResetPasswordRequests.FirstOrDefaultAsync(r => r.EmailAddress == mail);
-            if (request != null) {
+            if (request != null)
+            {
                 Context.ResetPasswordRequests.Remove(request);
             }
             string randomtoken = SecurityService.RandomLongString();

@@ -149,7 +149,7 @@ namespace XueLeMeBackend.Controllers
             }
             return await GroupService.KickUser(owner.ExtraData, group.ExtraData, user.ExtraData);
         }
-        
+
         [HttpGet]
         [Route("Detail/{groupid}")]
         public async Task<ServiceResult<GroupDetail>> Detail(int groupid)
@@ -172,7 +172,7 @@ namespace XueLeMeBackend.Controllers
                 return Result<IEnumerable<GroupBrief>>(user.State, null, user.Detail);
             }
             var groupsResult = await GroupService.MyJoinedGroups(user.ExtraData);
-            var groups = groupsResult.ExtraData.Select(g => new GroupBrief { Id=g.Id, Name=g.GroupName});
+            var groups = groupsResult.ExtraData.Select(g => new GroupBrief { Id = g.Id, Name = g.GroupName });
             return Result(groupsResult.State, groups, groupsResult.Detail);
         }
 

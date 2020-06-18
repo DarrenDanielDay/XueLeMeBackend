@@ -19,6 +19,6 @@ namespace XueLeMeBackend.Controllers
         {
             return View("HomePage");
         }
-        
+
     }
 }

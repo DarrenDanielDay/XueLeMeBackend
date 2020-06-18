@@ -22,10 +22,10 @@ namespace XueLeMeBackend.Models
             memberships.ForEach(m => members.Add(m.User.ToDetail()));
             return new GroupDetail
             {
-                Id=Id,
-                Name=GroupName,
-                Owner=Creator.ToDetail(),
-                Members=members
+                Id = Id,
+                Name = GroupName,
+                Owner = Creator.ToDetail(),
+                Members = members
             };
         }
     }

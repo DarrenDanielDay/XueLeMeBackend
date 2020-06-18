@@ -30,11 +30,11 @@ namespace XueLeMeBackend.Services
             var file = await Context.BinaryFiles.FirstOrDefaultAsync(f => f.MD5 == name);
             if (file == null)
             {
-                return NotFound(file,"文件不存在");
+                return NotFound(file, "文件不存在");
             }
             else
             {
-                return Exist(file,"文件存在");
+                return Exist(file, "文件存在");
             }
         }
 
@@ -65,13 +65,13 @@ namespace XueLeMeBackend.Services
                     }
                     else
                     {
-                        return Exist(existfile,"相同文件已存在");
+                        return Exist(existfile, "相同文件已存在");
                     }
                 }
             }
             Context.BinaryFiles.Add(binaryFile);
             await Context.SaveChangesAsync();
-            return Success(binaryFile,"文件保存成功");
+            return Success(binaryFile, "文件保存成功");
         }
 
         private bool BytesCompare(byte[] b1, byte[] b2)

@@ -175,7 +175,7 @@ namespace XueLeMeBackend.Services
             var createdContent = await CreateContent(content, images);
             if (createdContent.State != ServiceResultEnum.Success)
             {
-                return Result<Reply>(createdContent.State,null, createdContent.Detail);
+                return Result<Reply>(createdContent.State, null, createdContent.Detail);
             }
             else
             {
@@ -213,7 +213,7 @@ namespace XueLeMeBackend.Services
                 };
                 Context.Anonymous.Add(anonymous);
                 await Context.SaveChangesAsync();
-                
+
             }
             return Success(anonymous, "查询成功");
         }

@@ -8,7 +8,7 @@ using static XueLeMeBackend.Services.ServiceMessage;
 
 namespace XueLeMeBackend.Services
 {
-    public class QQMailService :MailAddressVerifier, IMailService
+    public class QQMailService : MailAddressVerifier, IMailService
     {
         public static readonly string Username = "darren_daniel_day";
         public static readonly string SmtpHost = "qq.com";
@@ -24,19 +24,22 @@ namespace XueLeMeBackend.Services
             {
                 return Invalid(false, valid.Detail);
             }
-            MailMessage message = new MailMessage(from: SenderAddress, to: new MailAddress(to));
-            message.Subject = title;
-            message.Body = content;
-            message.IsBodyHtml = true;
+            MailMessage message = new MailMessage(from: SenderAddress, to: new MailAddress(to))
+            {
+                Subject = title,
+                Body = content,
+                IsBodyHtml = true
+            };
             Smtp.Credentials = Credential;
-            return await Task.Run(() => {
+            return await Task.Run(() =>
+            {
                 try
                 {
                     Smtp.Send(message);
                 }
                 catch (Exception e)
                 {
-                    return Fail(false,"邮件发送失败"+ e.Message);
+                    return Fail(false, "邮件发送失败" + e.Message);
                 }
                 return Success(true, "邮件发送成功");
             });

@@ -11,7 +11,7 @@ using XueLeMeBackend.Services;
 
 namespace XueLeMeBackend.Hubs
 {
-    public class ChatHub: Hub
+    public class ChatHub : Hub
     {
         public ChatHub(XueLeMeContext xueLeMeContext, GroupService groupService, AccountService accountService)
         {
@@ -22,26 +22,26 @@ namespace XueLeMeBackend.Hubs
 
         public XueLeMeContext XueLeMeContext { get; }
         public GroupService GroupService { get; }
-        public AccountService AccountService { get; }  
+        public AccountService AccountService { get; }
         public static Dictionary<int, string> UserIdToConnectionId = new Dictionary<int, string>();
         public static Dictionary<string, int> ConnectionIdToUserId = new Dictionary<string, int>();
-        public async Task<string> SendMessage(int groupid, int type, string content)
+        public async Task<string> SendMessage(int groupId, int type, string content)
         {
-            bool hasUserId = ConnectionIdToUserId.TryGetValue(Context.ConnectionId, out int userid);
+            bool hasUserId = ConnectionIdToUserId.TryGetValue(Context.ConnectionId, out int userId);
             if (!hasUserId)
             {
                 return "当前未确客户端用户身份";
             }
-            if (type == (int) ChatMessage.MessageTypeEnum.Image && !CheckImageExist(content))
+            if (type == (int)ChatMessage.MessageTypeEnum.Image && !CheckImageExist(content))
             {
                 return "找不到消息的图片资源，请先上传图片资源";
             }
-            var group = await GroupService.GroupFromId(groupid);
+            var group = await GroupService.GroupFromId(groupId);
             if (group.State != ServiceResultEnum.Exist)
             {
                 return group.Detail;
             }
-            var user = await AccountService.UserFromId(userid);
+            var user = await AccountService.UserFromId(userId);
             if (user.State != ServiceResultEnum.Exist)
             {
                 return user.Detail;
@@ -51,7 +51,7 @@ namespace XueLeMeBackend.Hubs
             {
                 return userInGroup.Detail;
             }
-            var targets = Clients.Group(groupid.ToString());
+            var targets = Clients.Group(groupId.ToString());
             var message = new ChatMessage
             {
                 MessageOrImageKey = content,
@@ -67,13 +67,13 @@ namespace XueLeMeBackend.Hubs
             XueLeMeContext.ChatMessages.Add(message);
             XueLeMeContext.ChatRecords.Add(chatRecord);
             await XueLeMeContext.SaveChangesAsync();
-            await targets.SendAsync("OnReceiveMessage", userid, groupid, type, content, chatRecord.CreatedTime);
+            await targets.SendAsync("OnReceiveMessage", userId, groupId, type, content, chatRecord.CreatedTime);
             return "发送成功";
         }
 
-        public async Task<string> JoinRoom(int userid)
+        public async Task<string> JoinRoom(int userId)
         {
-            var user = await AccountService.UserFromId(userid);
+            var user = await AccountService.UserFromId(userId);
             if (user.State != ServiceResultEnum.Exist)
             {
                 return "用户不存在";
@@ -84,22 +84,22 @@ namespace XueLeMeBackend.Hubs
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, g.Id.ToString());
             });
-            
-            ConnectionIdToUserId[Context.ConnectionId] = userid;
-            UserIdToConnectionId[userid] = Context.ConnectionId;
+
+            ConnectionIdToUserId[Context.ConnectionId] = userId;
+            UserIdToConnectionId[userId] = Context.ConnectionId;
             return "加入聊天室成功";
         }
 
         private async Task QuitCurrentRoomAsync()
         {
-            var connid = Context.ConnectionId;
-            if (ConnectionIdToUserId.ContainsKey(connid))
+            var connectionId = Context.ConnectionId;
+            if (ConnectionIdToUserId.ContainsKey(connectionId))
             {
-                var uid = ConnectionIdToUserId[connid];
-                ConnectionIdToUserId.Remove(connid);
-                UserIdToConnectionId.Remove(uid);
-                var groups = (await GroupService.MyJoinedGroups(new User { Id=uid})).ExtraData.ToList();
-                groups.ForEach(async g => await Groups.RemoveFromGroupAsync(connid, g.Id.ToString()));
+                var userId = ConnectionIdToUserId[connectionId];
+                ConnectionIdToUserId.Remove(connectionId);
+                UserIdToConnectionId.Remove(userId);
+                var groups = (await GroupService.MyJoinedGroups(new User { Id = userId })).ExtraData.ToList();
+                groups.ForEach(async g => await Groups.RemoveFromGroupAsync(connectionId, g.Id.ToString()));
             }
         }
 

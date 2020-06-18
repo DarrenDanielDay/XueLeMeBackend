@@ -23,7 +23,7 @@ namespace XueLeMeBackend.Services
             {
                 return Exist(existingTag, "该Tag已存在");
             }
-            var newtag  = new Tag { DisplayName = tag };
+            var newtag = new Tag { DisplayName = tag };
             Context.Tags.Add(newtag);
             await Context.SaveChangesAsync();
             return Success(newtag, "创建成功");
@@ -32,9 +32,9 @@ namespace XueLeMeBackend.Services
         public async Task<ServiceResult<object>> CreateRange(ICollection<string> tags)
         {
             int count = 0;
-            foreach(var tag in tags)
+            foreach (var tag in tags)
             {
-                if((await Create(tag)).State != ServiceResultEnum.Exist)
+                if ((await Create(tag)).State != ServiceResultEnum.Exist)
                 {
                     count++;
                 }
@@ -50,7 +50,7 @@ namespace XueLeMeBackend.Services
         public Task<ServiceResult<ICollection<Tag>>> TagsFromStrings(ICollection<string> strings)
         {
             ICollection<Tag> tags = new List<Tag>();
-            foreach(var str in strings)
+            foreach (var str in strings)
             {
                 var tag = Context.Tags.FirstOrDefault(t => t.DisplayName == str);
                 if (tag != null)
