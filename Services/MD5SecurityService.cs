@@ -13,7 +13,6 @@ namespace XueLeMeBackend.Services
         }
 
         public MD5Service MD5Service { get; }
-        private byte[] buffer = new byte[1024];
 
         public string Decript(string ciphertext)
         {
@@ -27,6 +26,7 @@ namespace XueLeMeBackend.Services
 
         public string RandomLongString()
         {
+            byte[] buffer = new byte[1024];
             Random random = new Random();
             random.NextBytes(buffer);
             return MD5Service.MD5Generate(buffer);

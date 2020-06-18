@@ -44,6 +44,8 @@ namespace XueLeMeBackend.Data
             JoinGroup(context, user2, group1);
             JoinGroup(context, user3, group2);
             CreateZone(context, "数学吧");
+            CreateTag(context, "高等数学");
+            CreateTag(context, "线性代数");
             context.SaveChanges();
             Logger.LogInformation("Initialization completed.");
         }
@@ -101,6 +103,13 @@ namespace XueLeMeBackend.Data
                 Name = name,
             };
             context.Zones.Add(zone);
+            context.SaveChanges();
+        }
+
+        public void CreateTag(XueLeMeContext context, string tagString)
+        {
+            Tag tag = new Tag { DisplayName = tagString };
+            context.Tags.Add(tag);
             context.SaveChanges();
         }
     }

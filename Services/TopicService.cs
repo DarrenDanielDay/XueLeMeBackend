@@ -162,7 +162,7 @@ namespace XueLeMeBackend.Services
                 .Include(r => r.Reference)
                 .Include(r => r.Responder)
                 .Include(r => r.Topic)
-                .FirstOrDefault();
+                .FirstOrDefault(r => r.Id == id);
             if (reply != null)
             {
                 reply.Content = TextAndImageContentFromId(reply.ContentId).ExtraData;
@@ -231,6 +231,13 @@ namespace XueLeMeBackend.Services
             return result;
         }
 
+        public async Task<IEnumerable<Topic>> SearchByTag(string tag)
+        {
+            var topics = Context.Topics.Include(t => t.AppliedTags).Where(t => t.AppliedTags.Any(a => a.TagDisplayName == tag)).ToList();
+            var result = new List<Topic>();
+            topics.ForEach(async t => result.Add((await TopicFromId(t.Id)).ExtraData));
+            return topics;
+        }
 
     }
 }

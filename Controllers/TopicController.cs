@@ -167,5 +167,17 @@ namespace XueLeMeBackend.Controllers
             }
             return Exist(topicDetails, "查询成功");
         }
+
+        [HttpGet]
+        [Route("SearchByTag")]
+        public async Task<ServiceResult<IEnumerable<TopicDetail>>> SearchByTags(string tag)
+        {
+            if (tag == null)
+            {
+                return Invalid<IEnumerable<TopicDetail>>(null, "参数非法");
+            }
+            var result = await TopicService.SearchByTag(tag);
+            return Exist(result.Select(t => t.ToDetail()), "查询成功");
+        }
     }
 }

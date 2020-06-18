@@ -19,11 +19,9 @@ namespace XueLeMeBackend.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IMailService mainService, XueLeMeContext context)
+        public WeatherForecastController(IMailService mainService, XueLeMeContext context)
         {
-            _logger = logger;
             MainService = mainService;
             Context = context;
         }
