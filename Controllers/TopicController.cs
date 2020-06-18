@@ -29,48 +29,51 @@ namespace XueLeMeBackend.Controllers
 
         [HttpPost]
         [Route("CreateZone")]
-        public async Task<ServiceResult<object>> CreateZone([FromBody] CreateZoneForm createZoneForm)
+        public async Task<ServiceResult<CreatedForm>> CreateZone([FromBody] CreateZoneForm createZoneForm)
         {
             var result = await TopicService.CreateZone(createZoneForm.ZoneName);
-            return Result(result.State, result.Detail);
+            return Result(result.State,new CreatedForm { CreatedId=result.ExtraData?.Id} ,result.Detail);
         }
 
         [HttpPost]
         [Route("CreateTopic")]
-        public async Task<ServiceResult<object>> CreateTopic([FromBody] CreateTopicForm createTopicForm)
+        public async Task<ServiceResult<CreatedForm>> CreateTopic([FromBody] CreateTopicForm createTopicForm)
         {
+            CreatedForm created = new CreatedForm { };
             var zone = await TopicService.ZoneFromId(createTopicForm.ZoneId);
             if (zone.State != ServiceResultEnum.Exist)
             {
-                return Result(zone.State, zone.Detail);
+                return Result(zone.State,created, zone.Detail);
             }
             var user = await AccountService.UserFromId(createTopicForm.UserId);
             if (user.State != ServiceResultEnum.Exist)
             {
-                return Result(user.State, user.Detail);
+                return Result(user.State,created, user.Detail);
             }
             var tags = await TagService.TagsFromStrings(createTopicForm.Tags);
             if (tags.State != ServiceResultEnum.Exist)
             {
-                return Result(tags.State, tags.Detail);
+                return Result(tags.State, created, tags.Detail);
             }
             var result = await TopicService.Create(createTopicForm.Title, user.ExtraData, zone.ExtraData, tags.ExtraData,createTopicForm.Content,createTopicForm.Images);
-            return Result(result.State, result.Detail);
+            created.CreatedId = result.ExtraData?.Id;
+            return Result(result.State, created, result.Detail);
         }
 
         [HttpPost]
         [Route("MakeReply")]
-        public async Task<ServiceResult<object>> Reply([FromBody] MakeReplyForm makeReplyForm)
+        public async Task<ServiceResult<CreatedForm>> Reply([FromBody] MakeReplyForm makeReplyForm)
         {
+            CreatedForm created = new CreatedForm { };
             var user =await  AccountService.UserFromId(makeReplyForm.UserId);
             if (user.State != ServiceResultEnum.Exist)
             {
-                return Result(user.State, user.Detail);
+                return Result(user.State,created, user.Detail);
             }
             var topic = await TopicService.TopicFromId(makeReplyForm.TopicId);
             if (topic.State != ServiceResultEnum.Exist)
             {
-                return Result(topic.State, topic.Detail);
+                return Result(topic.State,created, topic.Detail);
             }
             Reply reply = null;
             if (makeReplyForm.ReferenceId != null)
@@ -78,14 +81,15 @@ namespace XueLeMeBackend.Controllers
                 var _reply = await TopicService.ReplyFromId(makeReplyForm.ReferenceId ?? 0);
                 if (_reply.State != ServiceResultEnum.Exist)
                 {
-                    return Result(_reply.State, _reply.Detail);
+                    return Result(_reply.State,created, _reply.Detail);
                 } else
                 {
                     reply = _reply.ExtraData;
                 }
             }
             var result = await TopicService.MakeReply(user.ExtraData, topic.ExtraData, reply, makeReplyForm.Content, makeReplyForm.Images);
-            return result;
+            created.CreatedId = result.ExtraData?.Id;
+            return Result(result.State, created, result.Detail);
         }
 
         [HttpGet]

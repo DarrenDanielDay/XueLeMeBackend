@@ -170,12 +170,12 @@ namespace XueLeMeBackend.Services
             return Task.FromResult(reply == null ? NotFound(reply, "回复不存在") : Exist(reply, "查询成功"));
         }
 
-        public async Task<ServiceResult<object>> MakeReply(User user, Topic topic, Reply reference, string content, ICollection<string> images)
+        public async Task<ServiceResult<Reply>> MakeReply(User user, Topic topic, Reply reference, string content, ICollection<string> images)
         {
             var createdContent = await CreateContent(content, images);
             if (createdContent.State != ServiceResultEnum.Success)
             {
-                return Result(createdContent.State, createdContent.Detail);
+                return Result<Reply>(createdContent.State,null, createdContent.Detail);
             }
             else
             {
@@ -192,7 +192,7 @@ namespace XueLeMeBackend.Services
                 Context.Replies.Add(reply);
                 await AnonymousOfUser(user, topic);
                 await Context.SaveChangesAsync();
-                return Success("回复成功");
+                return Success(reply, "回复成功");
             }
 
         }
