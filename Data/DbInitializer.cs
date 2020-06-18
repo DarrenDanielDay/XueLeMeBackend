@@ -30,11 +30,12 @@ namespace XueLeMeBackend.Data
         public void DoInit(XueLeMeContext context)
         {
             Logger.LogInformation("Initializing database...");
-            if (!Configuration.GetValue<bool>("IsServer"))
+            if (Configuration.GetValue<bool>("IsServer"))
             {
-                Logger.LogWarning("Removing database...");
-                context.Database.EnsureDeleted();
+                return;
             }
+            Logger.LogWarning("Removing database...");
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
             var user1 = CreateUser(context, "614434935@qq.com", "password");
             var user2 = CreateUser(context, "jamesnm2015@163.com", "123456");
