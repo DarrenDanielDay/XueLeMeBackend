@@ -44,7 +44,11 @@ namespace XueLeMeBackend.Services
             {
                 return Fail<BinaryFile>(null, "文件过大");
             }
-            var binaryFile = new BinaryFile { Bytes = new byte[file.Length], ContentType = file.ContentType, FileName = file.FileName };
+            var binaryFile = new BinaryFile {
+                Bytes = new byte[file.Length],
+                ContentType = file.ContentType, 
+                FileName = file.FileName 
+            };
             using (var fileStream = file.OpenReadStream())
             {
                 await fileStream.ReadAsync(binaryFile.Bytes, 0, Convert.ToInt32(file.Length));

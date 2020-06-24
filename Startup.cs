@@ -33,6 +33,8 @@ namespace XueLeMeBackend
         {
             services.AddSignalR();
             services.AddSingleton<DbInitializer>();
+            services.AddSingleton<IConnectionService, MemoryConnectionService>();
+            services.AddScoped<NotificationService>();
             services.AddScoped<AccountService>();
             services.AddScoped<GroupService>();
             services.AddScoped<ChatRecordService>();
@@ -84,6 +86,7 @@ namespace XueLeMeBackend
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/api/ChatRoom");
+                endpoints.MapHub<NotificationHub>("api/NotificationHub");
             });
         }
     }

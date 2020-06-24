@@ -189,5 +189,22 @@ namespace XueLeMeBackend.Controllers
             var groups = groupsResult.ExtraData.Select(g => new GroupBrief { Id = g.Id, Name = g.GroupName });
             return Result(groupsResult.State, groups, groupsResult.Detail);
         }
+
+        [HttpPost]
+        [Route("Message/Send")]
+        public async Task<ServiceResult<object>> SendMessage(SendMessageForm sendMessageForm)
+        {
+            var user = await AccountService.UserFromId(sendMessageForm.UserId);
+            if (user.State != ServiceResultEnum.Exist)
+            {
+                return Result(user.State, user.Detail);
+            }
+            var group = await GroupService.GroupFromId(sendMessageForm.ChatGroupId);
+            if (group.State != ServiceResultEnum.Exist)
+            {
+                return Result(group.State, group.Detail);
+            }
+            return await GroupService.SendMessage(user.ExtraData, group.ExtraData, sendMessageForm.Message.MessageType, sendMessageForm.Message.MessageContent);
+        }
     }
 }

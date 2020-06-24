@@ -8,17 +8,27 @@ using XueLeMeBackend.Models.Fragments;
 using static XueLeMeBackend.Services.ServiceMessage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.AspNetCore.SignalR;
+using XueLeMeBackend.Hubs;
+using XueLeMeBackend.Models.Forms;
+using XueLeMeBackend.Models.QueryJsons;
 
 namespace XueLeMeBackend.Services
 {
     public class GroupService
     {
-        public GroupService(XueLeMeContext context)
+        public GroupService(XueLeMeContext context, NotificationService notificationService, IHubContext<NotificationHub> hubContext, IConnectionService connectionService)
         {
             Context = context;
+            NotificationService = notificationService;
+            HubContext = hubContext;
+            ConnectionService = connectionService;
         }
 
         public XueLeMeContext Context { get; }
+        public NotificationService NotificationService { get; }
+        public IHubContext<NotificationHub> HubContext { get; }
+        public IConnectionService ConnectionService { get; }
 
         public async Task<ServiceResult<object>> AgreeJoin(User owner, JoinGroupRequest request)
         {
@@ -33,6 +43,11 @@ namespace XueLeMeBackend.Services
             }
             Context.JoinGroupRequests.Remove(request);
             Context.GroupMemberships.Add(new GroupMembership { UserId = request.User.Id, ChatGroupId = request.Group.Id, Role = GroupRole.Member });
+            if (ConnectionService.IsOnline(request.UserId))
+            {
+                await HubContext.Groups.AddToGroupAsync(ConnectionService.GetConnectionId(request.UserId), request.GroupId.ToString());
+            }
+            await NotificationService.NotifyGroupMembers(request.GroupId, $"{request?.User?.Nickname}加入了群聊", NotificationTypeEnum.NewMemberJoined);
             await Context.SaveChangesAsync();
             return Success("通过加群成功");
         }
@@ -75,6 +90,7 @@ namespace XueLeMeBackend.Services
             }
             Context.JoinGroupRequests.Add(new JoinGroupRequest { User = user, Group = chatGroup });
             await Context.SaveChangesAsync();
+            await NotificationService.Notify(chatGroup.Creator.Id, $"{user?.Nickname} 申请加入群 {chatGroup.GroupName}", NotificationTypeEnum.JoinRequest);
             return Success("加群申请成功");
         }
 
@@ -114,6 +130,12 @@ namespace XueLeMeBackend.Services
             }
             Context.GroupMemberships.Remove(membership);
             await Context.SaveChangesAsync();
+            if (ConnectionService.IsOnline(user.Id))
+            {
+                await HubContext.Groups.RemoveFromGroupAsync(ConnectionService.GetConnectionId(user.Id), chatGroup.Id.ToString());
+            }
+            await NotificationService.NotifyGroupMembers(chatGroup.Id, $"{user?.Nickname} 已被移出群聊 {chatGroup?.GroupName}", NotificationTypeEnum.UserKicked);
+            await NotificationService.Notify(user.Id, $"您已被移出群聊 {chatGroup?.GroupName}", NotificationTypeEnum.UserKicked);
             return Success("移除群聊成功");
         }
 
@@ -183,6 +205,42 @@ namespace XueLeMeBackend.Services
             Context.JoinGroupRequests.Remove(request);
             await Context.SaveChangesAsync();
             return Success("拒绝加群成功");
+        }
+
+        public async Task<ServiceResult<object>> SendMessage(User user, ChatGroup chatGroup, ChatMessage.MessageTypeEnum messageType, string content)
+        {
+            if (messageType == ChatMessage.MessageTypeEnum.Image)
+            {
+                if (Context.BinaryFiles.FirstOrDefault(f => f.MD5 == content) == null)
+                {
+                    return NotFound("找不到消息的图片资源，请先上传图片资源");
+                }
+            }
+            ChatMessage chatMessage = new ChatMessage
+            {
+                MessageOrImageKey = content,
+                Type = messageType,
+            };
+            ChatRecord chatRecord = new ChatRecord
+            {
+                Sender = user,
+                CreatedTime = DateTime.Now,
+                Group = chatGroup,
+                Message = chatMessage,
+            };
+            Context.ChatMessages.Add(chatMessage);
+            Context.ChatRecords.Add(chatRecord);
+            await Context.SaveChangesAsync();
+            ChatMessageDetail messageDetail = new ChatMessageDetail
+            {
+                Id = chatRecord.Id,
+                User = user.ToDetail(),
+                Group = chatGroup.ToDetail(),
+                MessageType = messageType,
+                Content = content,
+            };
+            await NotificationService.NotifyGroupMembers(chatGroup.Id, messageDetail.ToJson(), NotificationTypeEnum.ChatMessage);
+            return Success("发送成功");
         }
     }
 }

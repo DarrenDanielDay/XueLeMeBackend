@@ -1,24 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using XueLeMeBackend.Models;
 using XueLeMeBackend.Models.Fragments;
+using XueLeMeBackend.Services;
+
 namespace XueLeMeBackend.Data
 {
     public class DbInitializer
     {
-        public DbInitializer(ILogger<DbInitializer> logger, IConfiguration configuration)
+        public DbInitializer(ILogger<DbInitializer> logger, IConfiguration configuration, MD5Service mD5Service)
         {
             Initialized = false; 
             Logger = logger;
             Configuration = configuration;
+            MD5Service = mD5Service;
         }
         public bool Initialized { get; set; }
         public ILogger<DbInitializer> Logger { get; }
         public IConfiguration Configuration { get; }
+        public MD5Service MD5Service { get; }
 
         public void Init(XueLeMeContext context) 
         {
@@ -32,7 +37,7 @@ namespace XueLeMeBackend.Data
             Logger.LogInformation("Initializing database...");
             if (Configuration.GetValue<bool>("IsServer"))
             {
-                return;
+                //return;
             }
             Logger.LogWarning("Removing database...");
             context.Database.EnsureDeleted();
@@ -47,6 +52,10 @@ namespace XueLeMeBackend.Data
             CreateZone(context, "数学吧");
             CreateTag(context, "高等数学");
             CreateTag(context, "线性代数");
+            AddNotification(context, user1.Id, "测试通知1");
+            AddNotification(context, user1.Id, "测试通知2");
+            AddNotification(context, user1.Id, "测试通知3");
+            CreateFile(context, "Assets/DarrenDanielDay.jpg");
             context.SaveChanges();
             Logger.LogInformation("Initialization completed.");
         }
@@ -111,6 +120,37 @@ namespace XueLeMeBackend.Data
         {
             Tag tag = new Tag { DisplayName = tagString };
             context.Tags.Add(tag);
+            context.SaveChanges();
+        }
+
+        public void AddNotification(XueLeMeContext context, int userId, string content)
+        {
+            Notification notification = new Notification
+            {
+                Content = content,
+                NotificationType = NotificationTypeEnum.Replied,
+                UserId = userId,
+            };
+            context.Notifications.Add(notification);
+            context.SaveChanges();
+        }
+
+        public void CreateFile(XueLeMeContext context, string filename, string contentType = "image/jpg")
+        {
+            using (FileStream fileStream = File.OpenRead(filename))
+            {
+                BinaryFile file = new BinaryFile
+                {
+                    Bytes=new byte[fileStream.Length],
+                    FileName=filename,
+                    ContentType=contentType,
+                    CreatedTime=DateTime.Now,
+                };
+                fileStream.Read(file.Bytes, 0, Convert.ToInt32(fileStream.Length));
+                file.MD5 = MD5Service.MD5Generate(file.Bytes);
+                context.BinaryFiles.Add(file);
+                Logger.LogInformation($"Created file with MD5: {file.MD5}");
+            }
             context.SaveChanges();
         }
     }

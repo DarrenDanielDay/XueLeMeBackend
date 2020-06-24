@@ -19,6 +19,7 @@ namespace XueLeMeBackend.Models
         {
             return new ChatRecordDetail
             {
+                Id = Id,
                 Content = Message.MessageOrImageKey,
                 CreatedTime = CreatedTime,
                 Group = Group.ToDetail(),

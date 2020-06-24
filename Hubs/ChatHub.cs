@@ -11,6 +11,9 @@ using XueLeMeBackend.Services;
 
 namespace XueLeMeBackend.Hubs
 {
+    /// <summary>
+    /// depreciated
+    /// </summary>
     public class ChatHub : Hub
     {
         public ChatHub(XueLeMeContext xueLeMeContext, GroupService groupService, AccountService accountService)

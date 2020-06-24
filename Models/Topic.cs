@@ -25,7 +25,7 @@ namespace XueLeMeBackend.Models
                 Id = Id,
                 PublisherDetail = new AnonymousDetail
                 {
-                    Fakename = Anonymous.Where(a => a.UserId == Publisher.Id).FirstOrDefault().DisplayName,
+                    FakeName = Anonymous.Where(a => a.UserId == Publisher.Id).FirstOrDefault().DisplayName,
                     UserId = Publisher.Id,
                 },
                 Tags = AppliedTags.Select(t => t.TagDisplayName).ToList(),

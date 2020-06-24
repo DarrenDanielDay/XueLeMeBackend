@@ -24,7 +24,7 @@ namespace XueLeMeBackend.Models
                 ContentDetail = Content.ToDetail(),
                 User = new AnonymousDetail
                 {
-                    Fakename = Topic.Anonymous.FirstOrDefault(a => a.UserId == ResponderId).DisplayName,
+                    FakeName = Topic.Anonymous.FirstOrDefault(a => a.UserId == ResponderId).DisplayName,
                     UserId = ResponderId,
                 },
             };

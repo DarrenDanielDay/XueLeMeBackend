@@ -11,14 +11,16 @@ namespace XueLeMeBackend.Services
 {
     public class TopicService
     {
-        public TopicService(XueLeMeContext context, TagService tagService)
+        public TopicService(XueLeMeContext context, TagService tagService, NotificationService notificationService)
         {
             Context = context;
             TagService = tagService;
+            NotificationService = notificationService;
         }
 
         public XueLeMeContext Context { get; }
         public TagService TagService { get; }
+        public NotificationService NotificationService { get; }
 
         public ICollection<BinaryFile> CheckFiles(ICollection<string> files)
         {
@@ -192,6 +194,12 @@ namespace XueLeMeBackend.Services
                 Context.Replies.Add(reply);
                 await AnonymousOfUser(user, topic);
                 await Context.SaveChangesAsync();
+                string notifyMessage = $"有人在帖子 {topic.Title} 回复了你";
+                await NotificationService.Notify(topic.PublisherId, notifyMessage, NotificationTypeEnum.Replied);
+                if (reference != null)
+                {
+                    await NotificationService.Notify(reference.ResponderId, notifyMessage, NotificationTypeEnum.Mentioned);
+                }
                 return Success(reply, "回复成功");
             }
 

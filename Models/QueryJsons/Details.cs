@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace XueLeMeBackend.Models.QueryJsons
 
     public class ChatRecordDetail
     {
+        public int Id { get; set; }
         public UserDetail Sender { get; set; }
         public GroupDetail Group { get; set; }
         public DateTime CreatedTime { get; set; }
@@ -42,6 +44,19 @@ namespace XueLeMeBackend.Models.QueryJsons
         public int GroupId { get; set; }
     }
 
+    public class ChatMessageDetail
+    {
+        public int Id { get; set; }
+        public UserDetail User { get; set; }
+        public GroupDetail Group { get; set; }
+        public string Content { get; set; }
+        public ChatMessage.MessageTypeEnum MessageType { get; set; }
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+    }
+
     public class TextAndImageContentDetail
     {
         public int Id { get; set; }
@@ -52,7 +67,7 @@ namespace XueLeMeBackend.Models.QueryJsons
     public class AnonymousDetail
     {
         public int UserId { get; set; }
-        public string Fakename { get; set; }
+        public string FakeName { get; set; }
     }
 
     public class TopicDetail
@@ -77,5 +92,12 @@ namespace XueLeMeBackend.Models.QueryJsons
     {
         public int Id { get; set; }
         public string ZoneName { get; set; }
+    }
+
+    public class NotificationDetail
+    {
+        public int Id { get; set; }
+        public NotificationTypeEnum NotificationType { get; set; }
+        public string Content { get; set; }
     }
 }
