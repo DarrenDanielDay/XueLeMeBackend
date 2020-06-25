@@ -5,19 +5,22 @@ using System.Threading.Tasks;
 using XueLeMeBackend.Services;
 using Microsoft.AspNetCore.SignalR;
 using XueLeMeBackend.Data;
+using Microsoft.Extensions.Logging;
 
 namespace XueLeMeBackend.Hubs
 {
     public class NotificationHub: Hub
     {
-        public NotificationHub(IConnectionService connectionService, XueLeMeContext xueLeMeContext)
+        public NotificationHub(IConnectionService connectionService, XueLeMeContext xueLeMeContext, ILogger<NotificationHub> logger)
         {
             ConnectionService = connectionService;
             XueLeMeContext = xueLeMeContext;
+            Logger = logger;
         }
 
         public IConnectionService ConnectionService { get; }
         public XueLeMeContext XueLeMeContext { get; }
+        public ILogger<NotificationHub> Logger { get; }
 
         public async Task<string> JoinAsUser(int userId)
         {
@@ -33,11 +36,17 @@ namespace XueLeMeBackend.Hubs
             }
             return "成功与服务器建立连接";
         }
+        public override async Task OnConnectedAsync()
+        {
+            Logger.LogInformation("Connected with connection id = {0}", Context.ConnectionId);
+            await base.OnConnectedAsync();
+        }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
             ConnectionService.Detach(Context.ConnectionId);
-            return base.OnDisconnectedAsync(exception);
+            Logger.LogInformation("Disconnected with connection id = {0}", Context.ConnectionId);
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }

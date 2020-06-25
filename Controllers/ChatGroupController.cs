@@ -204,7 +204,7 @@ namespace XueLeMeBackend.Controllers
             {
                 return Result(group.State, group.Detail);
             }
-            return await GroupService.SendMessage(user.ExtraData, group.ExtraData, sendMessageForm.Message.MessageType, sendMessageForm.Message.MessageContent);
+            return await GroupService.SendMessage(user.ExtraData, group.ExtraData, sendMessageForm.MessageType, sendMessageForm.MessageContent);
         }
     }
 }

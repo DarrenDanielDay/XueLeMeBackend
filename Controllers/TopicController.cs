@@ -79,11 +79,7 @@ namespace XueLeMeBackend.Controllers
             if (makeReplyForm.ReferenceId != null)
             {
                 var _reply = await TopicService.ReplyFromId(makeReplyForm.ReferenceId ?? 0);
-                if (_reply.State != ServiceResultEnum.Exist)
-                {
-                    return Result(_reply.State, created, _reply.Detail);
-                }
-                else
+                if (_reply.State == ServiceResultEnum.Exist)
                 {
                     reply = _reply.ExtraData;
                 }

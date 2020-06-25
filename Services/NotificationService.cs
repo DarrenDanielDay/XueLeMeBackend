@@ -109,7 +109,7 @@ namespace XueLeMeBackend.Services
                 }
             }
             await Context.SaveChangesAsync();
-            await HubContext.Clients.Group(groupId.ToString()).SendAsync("OnNotify", notificationType, message);
+            await HubContext.Clients.Group(groupId.ToString()).SendAsync("OnNotify", (int)notificationType, message);
             return Success("群聊通知发送成功");
         }
     }

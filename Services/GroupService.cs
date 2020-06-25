@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.SignalR;
 using XueLeMeBackend.Hubs;
 using XueLeMeBackend.Models.Forms;
 using XueLeMeBackend.Models.QueryJsons;
+using Microsoft.Extensions.Logging;
 
 namespace XueLeMeBackend.Services
 {
@@ -235,9 +236,13 @@ namespace XueLeMeBackend.Services
             {
                 Id = chatRecord.Id,
                 User = user.ToDetail(),
-                Group = chatGroup.ToDetail(),
+                Group = new GroupBrief { 
+                    Id= chatGroup.Id,
+                    Name = chatGroup.GroupName,
+                },
                 MessageType = messageType,
                 Content = content,
+                CreatedTime = chatRecord.CreatedTime,
             };
             await NotificationService.NotifyGroupMembers(chatGroup.Id, messageDetail.ToJson(), NotificationTypeEnum.ChatMessage);
             return Success("发送成功");

@@ -9,11 +9,6 @@ namespace XueLeMeBackend.Models.Forms
     {
         public int UserId { get; set; }
         public int ChatGroupId { get; set; }
-        public MessageForm Message { get; set; }
-    }
-
-    public class MessageForm
-    {
         public string MessageContent { get; set; }
         public ChatMessage.MessageTypeEnum MessageType { get; set; }
     }
