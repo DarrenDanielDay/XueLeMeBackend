@@ -39,6 +39,14 @@ namespace XueLeMeBackend.Controllers
             return newGroup.State == ServiceResultEnum.Success ? Success(newGroup.ExtraData.ToDetail(), newGroup.Detail) : Fail<GroupDetail>(null, newGroup.Detail);
         }
 
+        [HttpGet]
+        [Route("Search")]
+        public async Task<ServiceResult<IEnumerable<GroupBrief>>> SearchGroups(string name)
+        {
+            var result = await GroupService.SearchGroupsByName(name);
+            return Result(result.State, result.ExtraData.Select(g => new GroupBrief { Id = g.Id, Name = g.GroupName }), result.Detail);
+        }
+
         [HttpPost]
         [Route("ChangeName")]
         public async Task<ServiceResult<object>> ChangeName([FromBody]ChangeGroupNameForm changeGroupNameForm)

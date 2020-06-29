@@ -6,6 +6,7 @@ using XueLeMeBackend.Services;
 using Microsoft.AspNetCore.SignalR;
 using XueLeMeBackend.Data;
 using Microsoft.Extensions.Logging;
+using XueLeMeBackend.Models;
 
 namespace XueLeMeBackend.Hubs
 {
@@ -29,6 +30,15 @@ namespace XueLeMeBackend.Hubs
                 return "账号不存在";
             }
             var groups = XueLeMeContext.GroupMemberships.Where(m => m.UserId == userId).Select(m => m.ChatGroupId).ToList();
+            if (ConnectionService.IsOnline(userId))
+            {
+                string connectionId = ConnectionService.GetConnectionId(userId);
+                if (connectionId != Context.ConnectionId)
+                {
+                    await Clients.Client(connectionId).SendAsync("OnNotify", (int)NotificationTypeEnum.ForceOut, "您的账号在别的设备被登录，可能是密码泄露，请重新登陆！");
+                    ConnectionService.Detach(connectionId);
+                }
+            }
             ConnectionService.Attach(Context.ConnectionId, userId);
             foreach(var group in groups)
             {

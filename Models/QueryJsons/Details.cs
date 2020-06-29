@@ -6,6 +6,19 @@ using System.Threading.Tasks;
 
 namespace XueLeMeBackend.Models.QueryJsons
 {
+    public class JsonHelper
+    {
+        private static readonly JsonSerializerSettings settings = new JsonSerializerSettings
+        {
+            ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
+            DateFormatString = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'FFF'Z'",
+        };
+        public static string ToJson(object item)
+        {
+            return JsonConvert.SerializeObject(item, settings);
+        }
+    }
+    
     public class UserDetail
     {
         public int Id { get; set; }
@@ -46,11 +59,6 @@ namespace XueLeMeBackend.Models.QueryJsons
 
     public class ChatMessageDetail
     {
-        private static readonly JsonSerializerSettings settings = new JsonSerializerSettings
-        {
-            ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
-            DateFormatString = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'FFF'Z'",
-        };
         public int Id { get; set; }
         public UserDetail User { get; set; }
         public GroupBrief Group { get; set; }
@@ -58,8 +66,8 @@ namespace XueLeMeBackend.Models.QueryJsons
         public ChatMessage.MessageTypeEnum MessageType { get; set; }
         public DateTime CreatedTime { get; set; }
         public string ToJson()
-        {            
-            return JsonConvert.SerializeObject(this, settings);
+        {
+            return JsonHelper.ToJson(this);
         }
     }
 
@@ -106,5 +114,24 @@ namespace XueLeMeBackend.Models.QueryJsons
         public int Id { get; set; }
         public NotificationTypeEnum NotificationType { get; set; }
         public string Content { get; set; }
+    }
+
+    public class UserDetailAndGroupDetail
+    {
+        public UserDetail User { get; set; }
+        public GroupDetail Group { get; set; }
+        public int RequestId { get; set; }
+    }
+
+    public class ReplyNotificationDetail
+    {
+        public int TopicId { get; set; }
+        public TextAndImageContentDetail ReplyDetail { get; set; }
+    }
+
+    public class ReferenceNotificationDetail
+    {
+        public int ReplyId { get; set; }
+        public TextAndImageContentDetail ReplyDetail { get; set; }
     }
 }

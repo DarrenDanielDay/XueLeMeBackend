@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using XueLeMeBackend.Data;
 using XueLeMeBackend.Models;
+using XueLeMeBackend.Models.QueryJsons;
 using static XueLeMeBackend.Services.ServiceMessage;
 
 namespace XueLeMeBackend.Services
@@ -194,11 +195,12 @@ namespace XueLeMeBackend.Services
                 Context.Replies.Add(reply);
                 await AnonymousOfUser(user, topic);
                 await Context.SaveChangesAsync();
-                string notifyMessage = $"有人在帖子 {topic.Title} 回复了你";
-                await NotificationService.Notify(topic.PublisherId, notifyMessage, NotificationTypeEnum.Replied);
+                string replyNotification = JsonHelper.ToJson(new ReplyNotificationDetail { ReplyDetail = reply.Content.ToDetail(), TopicId = topic.Id });
+                string mentionNotification = JsonHelper.ToJson(new ReferenceNotificationDetail { ReplyDetail = reply.Content.ToDetail(), ReplyId = reference.Id });
+                await NotificationService.Notify(topic.PublisherId, replyNotification, NotificationTypeEnum.Replied);
                 if (reference != null)
                 {
-                    await NotificationService.Notify(reference.ResponderId, notifyMessage, NotificationTypeEnum.Mentioned);
+                    await NotificationService.Notify(reference.ResponderId, mentionNotification, NotificationTypeEnum.Mentioned);
                 }
                 return Success(reply, "回复成功");
             }

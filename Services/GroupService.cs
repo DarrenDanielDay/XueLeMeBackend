@@ -31,6 +31,12 @@ namespace XueLeMeBackend.Services
         public IHubContext<NotificationHub> HubContext { get; }
         public IConnectionService ConnectionService { get; }
 
+
+        public Task<ServiceResult<IEnumerable<ChatGroup>>> SearchGroupsByName(string name)
+        {
+            return Task.FromResult(Exist(Context.ChatGroups.Where(g => g.GroupName.Contains(name)).AsEnumerable(), "查询成功"));
+        }
+
         public async Task<ServiceResult<object>> AgreeJoin(User owner, JoinGroupRequest request)
         {
             var owns = await OwnsGroup(owner, request.Group);
@@ -48,7 +54,7 @@ namespace XueLeMeBackend.Services
             {
                 await HubContext.Groups.AddToGroupAsync(ConnectionService.GetConnectionId(request.UserId), request.GroupId.ToString());
             }
-            await NotificationService.NotifyGroupMembers(request.GroupId, $"{request?.User?.Nickname}加入了群聊", NotificationTypeEnum.NewMemberJoined);
+            await NotificationService.NotifyGroupMembers(request.GroupId, $"{request?.User?.Nickname ?? "未命名用户"}加入了群聊", NotificationTypeEnum.NewMemberJoined);
             await Context.SaveChangesAsync();
             return Success("通过加群成功");
         }
@@ -89,9 +95,16 @@ namespace XueLeMeBackend.Services
             {
                 return Exist("您已经申请加群");
             }
-            Context.JoinGroupRequests.Add(new JoinGroupRequest { User = user, Group = chatGroup });
+            request = new JoinGroupRequest { User = user, Group = chatGroup };
+            Context.JoinGroupRequests.Add(request);
             await Context.SaveChangesAsync();
-            await NotificationService.Notify(chatGroup.Creator.Id, $"{user?.Nickname} 申请加入群 {chatGroup.GroupName}", NotificationTypeEnum.JoinRequest);
+            UserDetailAndGroupDetail detail = new UserDetailAndGroupDetail
+            {
+                User = user.ToDetail(),
+                Group = chatGroup.ToDetail(),
+                RequestId = request.Id,
+            };
+            await NotificationService.Notify(chatGroup.Creator.Id, JsonHelper.ToJson(detail), NotificationTypeEnum.JoinRequest);
             return Success("加群申请成功");
         }
 
@@ -135,8 +148,9 @@ namespace XueLeMeBackend.Services
             {
                 await HubContext.Groups.RemoveFromGroupAsync(ConnectionService.GetConnectionId(user.Id), chatGroup.Id.ToString());
             }
-            await NotificationService.NotifyGroupMembers(chatGroup.Id, $"{user?.Nickname} 已被移出群聊 {chatGroup?.GroupName}", NotificationTypeEnum.UserKicked);
-            await NotificationService.Notify(user.Id, $"您已被移出群聊 {chatGroup?.GroupName}", NotificationTypeEnum.UserKicked);
+            UserDetailAndGroupDetail detail = new UserDetailAndGroupDetail { Group = chatGroup.ToDetail(), User = user.ToDetail() };
+            await NotificationService.NotifyGroupMembers(chatGroup.Id, JsonHelper.ToJson(detail), NotificationTypeEnum.UserKicked);
+            await NotificationService.Notify(user.Id, JsonHelper.ToJson(detail), NotificationTypeEnum.UserKicked);
             return Success("移除群聊成功");
         }
 
@@ -188,6 +202,7 @@ namespace XueLeMeBackend.Services
             var membership = Context.GroupMemberships.FirstOrDefault(m => m.UserId == user.Id && m.ChatGroupId == chatGroup.Id);
             Context.GroupMemberships.Remove(membership);
             await Context.SaveChangesAsync();
+            await NotificationService.NotifyGroupMembers(chatGroup.Id, $"{user.Nickname ?? "未命名用户"} 退出l群 {chatGroup.GroupName}", NotificationTypeEnum.UserQuitted);
             return Success("退群成功");
         }
 

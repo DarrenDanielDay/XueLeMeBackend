@@ -32,5 +32,6 @@ namespace XueLeMeBackend.Models
         UserKicked,
         Replied,
         Mentioned,
+        ForceOut
     }
 }
