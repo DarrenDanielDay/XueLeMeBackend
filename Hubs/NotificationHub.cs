@@ -35,6 +35,7 @@ namespace XueLeMeBackend.Hubs
                 string connectionId = ConnectionService.GetConnectionId(userId);
                 if (connectionId != Context.ConnectionId)
                 {
+                    Logger.LogInformation("Force Out connection {0}, uid = {1}", Context.ConnectionId, userId);
                     await Clients.Client(connectionId).SendAsync("OnNotify", (int)NotificationTypeEnum.ForceOut, "您的账号在别的设备被登录，可能是密码泄露，请重新登陆！");
                     ConnectionService.Detach(connectionId);
                 }
@@ -48,14 +49,14 @@ namespace XueLeMeBackend.Hubs
         }
         public override async Task OnConnectedAsync()
         {
-            Logger.LogInformation("Connected with connection id = {0}", Context.ConnectionId);
+            Logger.LogInformation("Currently {0} connection (s), Connected with connection id = {1}", ConnectionService.ConnectionCount , Context.ConnectionId);
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             ConnectionService.Detach(Context.ConnectionId);
-            Logger.LogInformation("Disconnected with connection id = {0}", Context.ConnectionId);
+            Logger.LogInformation("Currently {0} connection (s) Disconnected with connection id = {1}, exception: {2}", ConnectionService.ConnectionCount, Context.ConnectionId, exception?.Message);
             await base.OnDisconnectedAsync(exception);
         }
     }

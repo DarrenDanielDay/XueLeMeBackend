@@ -57,7 +57,7 @@ namespace XueLeMeBackend.Services
                 };
                 Context.TextAndImageContents.Add(textAndImageContent);
                 await Context.SaveChangesAsync();
-                Context.AdditionalImages.AddRange(binaryFiles.Select(
+                var addtionalImages = binaryFiles.Select(
                     f => new AdditionalImage
                     {
                         ImageFileMD5 = f.MD5,
@@ -65,7 +65,9 @@ namespace XueLeMeBackend.Services
                         ImageFile = f,
                         TextAndImageContent = textAndImageContent
                     }
-                    ));
+                    ).ToList();
+                Context.AdditionalImages.AddRange(addtionalImages);
+                textAndImageContent.Images = addtionalImages;
                 await Context.SaveChangesAsync();
                 return Success(textAndImageContent, "创建成功");
             }
@@ -196,10 +198,10 @@ namespace XueLeMeBackend.Services
                 await AnonymousOfUser(user, topic);
                 await Context.SaveChangesAsync();
                 string replyNotification = JsonHelper.ToJson(new ReplyNotificationDetail { ReplyDetail = reply.Content.ToDetail(), TopicId = topic.Id });
-                string mentionNotification = JsonHelper.ToJson(new ReferenceNotificationDetail { ReplyDetail = reply.Content.ToDetail(), ReplyId = reference.Id });
                 await NotificationService.Notify(topic.PublisherId, replyNotification, NotificationTypeEnum.Replied);
                 if (reference != null)
                 {
+                    string mentionNotification = JsonHelper.ToJson(new ReferenceNotificationDetail { ReplyDetail = reply.Content.ToDetail(), ReplyId = reference.Id });
                     await NotificationService.Notify(reference.ResponderId, mentionNotification, NotificationTypeEnum.Mentioned);
                 }
                 return Success(reply, "回复成功");

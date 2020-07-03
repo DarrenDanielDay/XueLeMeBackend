@@ -10,6 +10,8 @@ namespace XueLeMeBackend.Services
         private Dictionary<string, int> UserIds = new Dictionary<string, int>();
         private Dictionary<int, string> ConnectionIds = new Dictionary<int, string>();
 
+        public int ConnectionCount => UserIds.Count;
+
         public void Attach(string connectionId, int userId)
         {
             if (UserIds.ContainsKey(connectionId))

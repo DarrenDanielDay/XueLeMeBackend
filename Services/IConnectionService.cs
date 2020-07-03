@@ -12,5 +12,6 @@ namespace XueLeMeBackend.Services
         public int? GetUserId(string connectionId);
         public string GetConnectionId(int userId);
         public bool IsOnline(int userId);
+        public int ConnectionCount { get; }
     }
 }

@@ -43,18 +43,21 @@ namespace XueLeMeBackend.Data
             Logger.LogWarning("Removing database...");
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
-            var avatar = CreateFile(context, "Assets/DarrenDanielDay.jpg");
+            var avatar1 = CreateFile(context, "Assets/DarrenDanielDay.jpg");
+            var avatar2 = CreateFile(context, "Assets/tom.jpg");
+            var avatar3 = CreateFile(context, "Assets/jk.jpg");
             var lhopital = CreateFile(context, "Assets/LHopital.jpg");
             var timg = CreateFile(context, "Assets/timg.jpg");
             var format = CreateFile(context, "Assets/format.jpg");
-            var user1 = CreateUser(context, "614434935@qq.com", "password", "Darren", avatar.MD5);
-            var user2 = CreateUser(context, "jamesnm2015@163.com", "123456");
-            var user3 = CreateUser(context, "1215196803@qq.com", "123456");
+            var user1 = CreateUser(context, "614434935@qq.com", "password", "Darren", avatar1.MD5);
+            var user2 = CreateUser(context, "jamesnm2015@163.com", "123456", "james", avatar2.MD5);
+            var user3 = CreateUser(context, "1215196803@qq.com", "123456", "ZYH", avatar3.MD5);
             var group1 = CreateGroup(context, "group1", user1);
             var group2 = CreateGroup(context, "group2", user1);
             JoinGroup(context, user2, group1);
             JoinGroup(context, user3, group2);
             var mathBar = CreateZone(context, "数学吧");
+            CreateZone(context, "英语吧");
             var advancedMath = CreateTag(context, "高等数学");
             CreateTag(context, "线性代数");
             var topic1 = CreateTopic(context, mathBar, "大家都怎么用洛必达法则？", "洛必达镇楼", user1, "An8kf01X",new List<string> { timg.MD5 }, new List<string> {advancedMath.DisplayName });
@@ -62,9 +65,6 @@ namespace XueLeMeBackend.Data
             CreateReply(context, topic1, user3, null, "用等价无穷小他不香吗", new List<string> { format.MD5 }, reply2);
             var reply1 = CreateReply(context, topic1, user2, "x09oUYLm", "管他呢，洛就完了\n洛必达法则天下第一！", new List<string> { lhopital.MD5 }, null);
             CreateReply(context, topic1, user1, null, "hhh确实\n洛必达法则，永远滴神", new List<string> { }, reply1);
-            AddNotification(context, user1.Id, "测试通知1");
-            AddNotification(context, user1.Id, "测试通知2");
-            AddNotification(context, user1.Id, "测试通知3");
             context.SaveChanges();
             Logger.LogInformation("Initialization completed.");
         }
